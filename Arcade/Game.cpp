@@ -5,8 +5,6 @@
 #include "Board.h"
 
 Game::Game(int width, int height,std::string title, int targetFPS) 
-	:
-	board(width, height, 200,200, 15)
 
 {
 	assert(!IsWindowReady()); // Assertion triggered if window is already opened.
@@ -34,6 +32,5 @@ void Game::Update() {
 
 void Game::Draw() {
 	ClearBackground(RAYWHITE);
-	board.Draw(width, height);
 	DrawRectangleLines(50, 50, 50, 50, RED);
 }

@@ -3,32 +3,26 @@
 #include <vector>
 class Board 
 {
-private:
+
+public:
 	class Cell
 	{
 	public:
 		Cell();
-		Color GetColor() const;
 		void SetColor(Color c_in);
-		void RemoveColor();
-		
-		
 	private:
-		bool bExists;
 		Color c;
+		
 	};
 public:
-	int getCellSize();
-	Board(int x_Pos, int y_Pos, int width, int height, int cellSize);
+	Board();
+	//Board(int row, int column, int cellSize);
+	void Initialize();
 	void Draw(int screenWidth, int screenHeight);
-	
+	Cell grid[20][10];
 private:
-	
-	const int width;
-	const int height;
-	Board::Cell grid[20][10];
-	const int x_Pos;
-	const int y_Pos;
-	const int cellSize;
-	
+	int numRow;
+	int numCol;
+	int cellSize;
+		
 };

@@ -10,11 +10,13 @@ int main(void)
 {
     const int scrWidth = 600;
     const int scrHeight = 1024;
-    Game game{scrWidth,scrHeight, "Hello there", 60 };
-    
-    while (!game.GameShouldClose()) {
-        game.Tick();
+    InitWindow(scrWidth, scrHeight, "Tetris");
+    Board b = Board();
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+        b.Draw(scrWidth, scrHeight);
+        EndDrawing();
     }
-    
+    CloseWindow();
     return 0;
 }
