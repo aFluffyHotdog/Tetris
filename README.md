@@ -1,7 +1,7 @@
 # Arcade
 
 
-Well, I haven't coded in C in 2 years, and I've been on python the whole time. Now that the training wheels are off, I'd just like to document 
+Well, I haven't coded in C in 2 years, and I've been on python the whole time. Now that the training wheels are off, I'd just like to document how much of an idiot I've been
 
 20/9
 - Learned what a destructor is
@@ -13,3 +13,6 @@ Well, I haven't coded in C in 2 years, and I've been on python the whole time. N
   
 22/9
 - ints in c++ has 4 bits.... fuck python man
+
+24/9
+- Passing a reference as a parameter
