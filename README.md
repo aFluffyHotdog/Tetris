@@ -11,7 +11,7 @@ TODO:
 - [ ] Make block stop moving once it hits bottom
 - [ ] Add a line clearing function
 
-#H1 Installion steps (to be updated)
+# H1 Installion steps (to be updated)
 
 1. https://vcpkg.io/en/ install this package manager and follow instructions on website on how to install it
 2. run  ` vcpkg install raylib` in the command line
