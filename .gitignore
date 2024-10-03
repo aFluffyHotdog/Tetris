@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Arcade/CMakeLists.txt
+/Arcade/.idea
+/Arcade/cmake-build-debug
