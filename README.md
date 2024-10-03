@@ -1,18 +1,18 @@
 # Arcade
 
+Progress update:
+- Block movement somewhat works (although currently clicking a keyboard button once might move it too far if your click is too long)
+- Grid updating/drawing is working
 
-Well, I haven't coded in C in 2 years, and I've been on python the whole time. Now that the training wheels are off, I'd just like to document how much of an idiot I've been
+# TODO:
+- [ ] Finish coding other blocks
+- [ ] Add a collision system for blocks
+- [ ] Add a game class to only allow one block to move at a time
+- [ ] Make block stop moving once it hits bottom
+- [ ] Add a line clearing function
 
-20/9
-- Learned what a destructor is
-- learned the average class structure for a c++ program??
+# Installion steps (to be updated)
 
-21/9
-- The rule of the big 5: If you modify a class constructor, you should also manually write the destructor, copier, assignment and move
-- a reference in c++ is just a c pointer with less functionalities
-  
-22/9
-- ints in c++ has 4 bits.... fuck python man
-
-24/9
-- Passing a reference as a parameter
+1. https://vcpkg.io/en/ install this package manager and follow instructions on website on how to install it
+2. run  ` vcpkg install raylib` in the command line
+3. open the arcade folder (if you're using CLion) 
