@@ -2,7 +2,7 @@
 
 Progress update:
 - Block movement somewhat works (although currently clicking a keyboard button once might move it too far if your click is too long)
-- Grid updating is working
+- Grid updating/drawing is working
 
 # TODO:
 - [ ] Finish coding other blocks
