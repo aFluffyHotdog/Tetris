@@ -2,19 +2,15 @@
 #include <string>
 #include <raylib.h>
 #include "board.h"
+#include "Tetromino.h"
 class Game
 {
 public:
-	Game(int width, int height, std::string title, int targetFPS);
-	bool GameShouldClose() const;
-	void Tick();
-	Game(const Game& other) = delete;
-	Game& operator=(const Game& other) = delete;
-	~Game() noexcept;
-private:
-	int width;
-	int height;
-	Board board;
-	void Update();
+	Game();
 	void Draw();
+	Board board;
+	void HandleInput();
+private:
+	std::vector<Tetromino> tetrominoes;
+	Tetromino currentBlock;
 };

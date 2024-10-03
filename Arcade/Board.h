@@ -10,15 +10,20 @@ public:
 	public:
 		Cell();
 		void SetColor(Color c_in);
-	private:
+		void Clear();
+		Color GetColor();
 		Color c;
-		
+		bool exists;
 	};
 public:
 	Board();
 	//Board(int row, int column, int cellSize);
 	void Initialize();
+	void SetColor(int row, int col, Color c);
+	void Clear(int row, int col);
 	void Draw(int screenWidth, int screenHeight);
+	void Clear();
+	void PrintRow(int row);
 	Cell grid[20][10];
 private:
 	int numRow;
