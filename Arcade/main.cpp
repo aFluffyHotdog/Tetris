@@ -2,7 +2,6 @@
 #include "Game.h"
 #include "Board.h"
 #include "Tetromino.h"
-#include <chrono>
 #include <thread>
 #include <iostream>
 
@@ -32,9 +31,10 @@ int main(void)
        // std::cout << "after move" << std::endl;
         
        
-        if (IsKeyDown(KEY_RIGHT)) h.MoveRight(boad);
-        if (IsKeyDown(KEY_LEFT)) h.MoveLeft(boad);
-        if (IsKeyDown(KEY_DOWN)) h.MoveDown(boad);
+        if (IsKeyPressed(KEY_RIGHT)) h.MoveRight(boad);
+        if (IsKeyPressed(KEY_LEFT)) h.MoveLeft(boad);
+        if (IsKeyPressed(KEY_DOWN)) h.MoveDown(boad);
+        if (IsKeyPressed(KEY_UP)) h.Rotate(boad);
         BeginDrawing();
           
         boad.Draw(scrWidth, scrHeight);
