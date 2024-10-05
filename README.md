@@ -5,6 +5,7 @@ Progress update:
 - Grid updating/drawing is working
 
 # TODO:
+- [ ] Handle rotating at edges
 - [ ] Finish coding other blocks
 - [ ] Add a collision system for blocks
 - [ ] Add a game class to only allow one block to move at a time
