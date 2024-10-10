@@ -52,3 +52,32 @@ public:
 
 private:
 };
+
+class O_Ricky : public Tetromino {
+public:
+	O_Ricky();
+
+private:
+};
+
+class SmashBoi : public Tetromino {
+public:
+	SmashBoi();
+
+private:
+};
+
+class TeeWee : public Tetromino {
+public:
+	TeeWee();
+};
+
+class Cleveland_Z : public Tetromino {
+public:
+	Cleveland_Z();
+};
+
+class Rhode_Z : public Tetromino {
+public:
+	Rhode_Z();
+};

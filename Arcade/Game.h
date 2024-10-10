@@ -7,10 +7,21 @@ class Game
 {
 public:
 	Game();
+	std::vector<Tetromino> GetAllTetrominoes();
 	void Draw();
-	Board board;
 	void HandleInput();
+	void SetActive();
+	bool CheckBounds(int rotationState, int y_offset, int x_offset);
+	bool CheckCollision(int rotationState, int y_offset, int x_offset);
+	bool CheckInternalBlock(const pair<int, int>& p);
+	void LockBlock();
+	void Rotate();
+	void MoveDown();
+	void MoveLeft();
+	void MoveRight();
+	void Drop();
+	Board board;
 private:
 	std::vector<Tetromino> tetrominoes;
-	Tetromino currentBlock;
+	Tetromino activePiece;
 };

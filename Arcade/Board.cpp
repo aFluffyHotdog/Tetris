@@ -28,7 +28,6 @@ void Board::Clear(int row, int col) {
 
 Board::Cell::Cell() {
 	c = WHITE;
-
 }
 
 void Board::Cell::SetColor(Color c_in) {
@@ -44,22 +43,7 @@ Color Board::Cell::GetColor() {
 	return c;
 }
 
-//Board::Board(int x_Pos_in, int y_Pos_in, int width_in, int height_in, int cellSize_in)
-//	:
-//	x_Pos(x_Pos_in),
-//	y_Pos(y_Pos_in),
-//	width(width_in),
-//	height(height_in),
-//	cellSize(cellSize_in)
-//{
-//	for (int i = 0; i < sizeof(grid); i++) {
-//		for (int j = 0; j < sizeof(grid[0]); j++) {
-//			grid[i][j].SetColor(RED);
-//		}
-//	}
-//}
-//
-//
+
 void Board::Draw(int screenWidth, int screenHeight){
 	float start_x = (screenWidth - (cellSize * 10)) / 2;
 	float start_y = (screenHeight - (cellSize * 20)) / 2;
@@ -94,7 +78,6 @@ void Board::Clear() {
 void Board::PrintRow(int row) {
 		for (int j = 0; j < numCol; j++) {
 			std::cout << grid[row][j].exists;
-			
 		}
 		std::cout << std::endl;
 	}
