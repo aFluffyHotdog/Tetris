@@ -5,13 +5,14 @@ Progress update:
 - Grid updating/drawing is working
 
 # TODO:
+- [ ] Handle rotating at edges
 - [ ] Finish coding other blocks
 - [ ] Add a collision system for blocks
 - [ ] Add a game class to only allow one block to move at a time
 - [ ] Make block stop moving once it hits bottom
 - [ ] Add a line clearing function
 
-# Installion steps (to be updated)
+# Installion steps (to be updated, I don't know how to use CMake TvT)
 
 1. https://vcpkg.io/en/ install this package manager and follow instructions on website on how to install it
 2. run  ` vcpkg install raylib` in the command line
