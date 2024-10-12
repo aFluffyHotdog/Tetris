@@ -14,6 +14,8 @@ public:
 	bool CheckBounds(int rotationState, int y_offset, int x_offset);
 	bool CheckCollision(int rotationState, int y_offset, int x_offset);
 	bool CheckInternalBlock(const pair<int, int>& p);
+	bool CheckRowFull(int row);
+	void ClearRows();
 	void LockBlock();
 	void Rotate();
 	void MoveDown();

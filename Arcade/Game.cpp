@@ -71,6 +71,7 @@ void Game::HandleInput() {
 // Checks if block is still in the board.
 bool Game::CheckBounds(int rotationState, int y_offset, int x_offset) 
 {
+	rotationState = (rotationState) % (size(activePiece.rotationStates));
 	for (const auto& block : activePiece.rotationStates[rotationState])
 	{
 		if (!(((block.first + activePiece.originYPos + y_offset) >= 0) && ((block.first + activePiece.originYPos + y_offset) <= 19) && // check vertical bounds
@@ -87,7 +88,8 @@ bool Game::CheckBounds(int rotationState, int y_offset, int x_offset)
 
 // Check if there are any other blocks there.
 bool Game::CheckCollision(int rotationState, int y_offset, int x_offset)
-{
+{	
+	rotationState = (rotationState) % (size(activePiece.rotationStates));
 	for (const auto& block : activePiece.rotationStates[rotationState])
 	{	// this method is to make sure it only checks the cells that this block is not already taking up.
 		if (CheckInternalBlock(std::make_pair(block.first + activePiece.originYPos + y_offset, block.second + activePiece.originXPos + x_offset))) { 
@@ -112,14 +114,33 @@ bool Game::CheckInternalBlock(const pair<int, int>& p) {
 	}
 	for (const auto& pairInList : internal_pos) {
 		if (p == pairInList) {
-			std::cout << p.first + "was inside" << std::endl;
-			std::cout << p.second + "was inside" << std::endl;
+			/*std::cout << p.first + "was inside" << std::endl;
+			std::cout << p.second + "was inside" << std::endl;*/
 			return false; // Pair is found, so it's in the list
 		}
 	}
 	return true; // Pair is not found, so it's not in the list
 }
 
+bool Game::CheckRowFull(int row) {
+	for (const auto& cell : Game::board.grid[row]) {
+		if (!cell.exists) {
+			return false;
+		}
+	}
+	return true;
+
+}
+
+void Game::ClearRows() {
+	for (int i = sizeof(Game::board.grid); i >= 0; i--) {
+		if (CheckRowFull(i)) {
+			for (int j = 0; j < sizeof(board.grid[i]); i++) {
+				board.grid[i][j] = board.grid[i - 1][j];
+			}
+		}
+	}
+}
 void Game::LockBlock(){
 		board.PrintRow(19);
 		//activePiece.active = false;
@@ -133,7 +154,12 @@ void Game::Rotate() {
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
-		activePiece.rotationState = (activePiece.rotationState + 1) % size(activePiece.rotationStates);
+		/*if (activePiece.rotationState + 1 > size(activePiece.rotationStates)) {*/
+			std::cout << "next rotation state" << std::endl;
+			std::cout << size(activePiece.rotationStates) << std::endl;
+			std::cout << (activePiece.rotationState + 1) % (size(activePiece.rotationStates)) << std::endl;
+		// }
+		activePiece.rotationState = (activePiece.rotationState + 1) % (size(activePiece.rotationStates));
 		activePiece.Draw(board);
 	}
 }
@@ -176,4 +202,6 @@ void Game::Drop() {
 		Game::MoveDown();
 	}
 }
+
+
 

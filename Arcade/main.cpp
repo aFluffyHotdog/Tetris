@@ -21,6 +21,7 @@ int main(void)
         g.Draw();
         g.HandleInput();
         EndDrawing();
+        g.ClearRows();
         
         
     }

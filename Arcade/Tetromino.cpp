@@ -94,7 +94,7 @@ TeeWee::TeeWee()
     rotationStates[0] = { make_pair(0,1), make_pair(1,0), make_pair(1,1), make_pair(1,2)};
     rotationStates[1] = { make_pair(0,1), make_pair(1,1), make_pair(1,2), make_pair(2,1)};
     rotationStates[2] = { make_pair(2,1), make_pair(1,0), make_pair(1,1), make_pair(1,2)};
-    rotationStates[1] = { make_pair(0,1), make_pair(1,1), make_pair(1,0), make_pair(2,1)};
+    rotationStates[3] = { make_pair(0,1), make_pair(1,1), make_pair(1,0), make_pair(2,1)};
 }
 
 Cleveland_Z::Cleveland_Z()
@@ -104,7 +104,7 @@ Cleveland_Z::Cleveland_Z()
     rotationStates[0] = { make_pair(0,1), make_pair(1,0), make_pair(1,1), make_pair(0,2) };
     rotationStates[1] = { make_pair(0,1), make_pair(1,1), make_pair(1,2), make_pair(2,2) };
     rotationStates[2] = { make_pair(2,1), make_pair(2,0), make_pair(1,1), make_pair(1,2) };
-    rotationStates[1] = { make_pair(0,0), make_pair(1,1), make_pair(1,0), make_pair(2,1) };
+    rotationStates[3] = { make_pair(0,0), make_pair(1,1), make_pair(1,0), make_pair(2,1) };
 }
 
 Rhode_Z::Rhode_Z()
@@ -114,5 +114,5 @@ Rhode_Z::Rhode_Z()
     rotationStates[0] = { make_pair(0,0), make_pair(0,1), make_pair(1,1), make_pair(1,2) };
     rotationStates[1] = { make_pair(0,2), make_pair(1,1), make_pair(1,2), make_pair(2,1) };
     rotationStates[2] = { make_pair(1,0), make_pair(1,1), make_pair(2,1), make_pair(2,2) };
-    rotationStates[1] = { make_pair(0,1), make_pair(1,1), make_pair(1,0), make_pair(2,0) };
+    rotationStates[3] = { make_pair(0,1), make_pair(1,1), make_pair(1,0), make_pair(2,0) };
 }
