@@ -77,9 +77,9 @@ bool Game::CheckBounds(int rotationState, int y_offset, int x_offset)
 		if (!(((block.first + activePiece.originYPos + y_offset) >= 0) && ((block.first + activePiece.originYPos + y_offset) <= 19) && // check vertical bounds
 			((block.second + activePiece.originXPos + x_offset) >= 0) && ((block.second + activePiece.originXPos + x_offset) <= 9))) // check horizontal bounds
 		{
-			std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
+			/*std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
 			std::cout << block.second + activePiece.originXPos + x_offset<< std::endl;
-			std::cout << "bounds invalid" << std::endl;
+			std::cout << "bounds invalid" << std::endl;*/
 			return false;
 		}
 	}
@@ -96,9 +96,9 @@ bool Game::CheckCollision(int rotationState, int y_offset, int x_offset)
 			if ((board.grid[block.first + activePiece.originYPos + y_offset][block.second + activePiece.originXPos + x_offset].exists))
 			{
 
-				std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
+				/*std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
 				std::cout << block.second + activePiece.originXPos + x_offset << std::endl;
-				std::cout << "collision invalid" << std::endl;
+				std::cout << "collision invalid" << std::endl;*/
 				return false;
 			}
 		}
@@ -123,8 +123,8 @@ bool Game::CheckInternalBlock(const pair<int, int>& p) {
 }
 
 bool Game::CheckRowFull(int row) {
-	for (const auto& cell : Game::board.grid[row]) {
-		if (!cell.exists) {
+	for (int i = 0; i < 9; i++) {
+		if (board.grid[row][i].exists == false) {
 			return false;
 		}
 	}
@@ -133,12 +133,15 @@ bool Game::CheckRowFull(int row) {
 }
 
 void Game::ClearRows() {
-	for (int i = sizeof(Game::board.grid); i >= 0; i--) {
+	for (int i = 19; i > 0; i--) {
 		if (CheckRowFull(i)) {
-			for (int j = 0; j < sizeof(board.grid[i]); i++) {
-				board.grid[i][j] = board.grid[i - 1][j];
-			}
+			std::cout << "clearing row" + i << std::endl;
+			board.Clear(i - 1);
+			
+			board.ShiftRows();
 		}
+		
+		
 	}
 }
 void Game::LockBlock(){
