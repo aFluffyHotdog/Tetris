@@ -24,7 +24,7 @@ public:
 	void Draw(int screenWidth, int screenHeight);
 	void Clear();
 	void PrintRow(int row);
-	Cell grid[20][10];
+	Cell* grid[20][10];
 private:
 	int numRow;
 	int numCol;
