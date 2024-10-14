@@ -3,20 +3,19 @@
 #include <iostream>
 
 Tetromino::Tetromino() {
-
+    active = false;
+    originXPos = 0;
+    originYPos = 0;
 }
 Tetromino::Tetromino( int new_id) { 
-    active = false;
+
     id = new_id;
     rotationState = 0;
 
 
 }
 
-bool Tetromino::CheckCollision(Board& b) {
 
-    return true; 
-}
 
 void Tetromino::Rotate(Board& b) {
 

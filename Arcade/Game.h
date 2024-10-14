@@ -9,6 +9,9 @@ public:
 	Game();
 	std::vector<Tetromino> GetAllTetrominoes();
 	void Draw();
+
+	void DrawActive();
+
 	void HandleInput();
 	void SetActive();
 	bool CheckBounds(int rotationState, int y_offset, int x_offset);
