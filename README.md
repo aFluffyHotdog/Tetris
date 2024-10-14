@@ -1,4 +1,4 @@
-# Arcade
+# Arcade Machine Project
 
 Progress update:
 - Collision is working
@@ -8,7 +8,8 @@ Progress update:
 - [ ] Finish row clearing function
 - [ ] Code block to slowly drop
 - [ ] Add start and end screen
-- [ ] (Potentially add sprite)
+- [ ] (Potentially add sprites)
+- [ ] Compile to run on PiOS
 
 # Installion steps (on Mac, using CLion because people seem to not like Visual Studio)
 
