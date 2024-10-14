@@ -1,19 +1,16 @@
 # Arcade
 
 Progress update:
-- Block movement somewhat works (although currently clicking a keyboard button once might move it too far if your click is too long)
+- Collision is working
 - Grid updating/drawing is working
 
 # TODO:
-- [ ] Handle rotating at edges
-- [ ] Finish coding other blocks
-- [ ] Add a collision system for blocks
-- [ ] Add a game class to only allow one block to move at a time
-- [ ] Make block stop moving once it hits bottom
-- [ ] Add a line clearing function
+- [ ] Finish row clearing function
+- [ ] Code block to slowly drop
+- [ ] Add start and end screen
+- [ ] (Potentially add sprite)
 
-# Installion steps (to be updated, I don't know how to use CMake TvT)
+# Installion steps (on Mac, using CLion because people seem to not like Visual Studio)
 
-1. https://vcpkg.io/en/ install this package manager and follow instructions on website on how to install it
-2. run  ` vcpkg install raylib` in the command line
-3. open the arcade folder (if you're using CLion) 
+1. Using homebrew run `brew install raylib`
+2. Clone this repo and use the CMakeLists file included and you should be good actually?!
