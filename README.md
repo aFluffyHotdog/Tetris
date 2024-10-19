@@ -5,10 +5,9 @@ Progress update:
 - Grid updating/drawing is working
 
 # TODO:
-- [ ] Finish row clearing function
 - [ ] Refactor row clearing function
-- [ ] Code block to slowly drop
 - [ ] Add start and end screen
+- [ ] Try shaders
 - [ ] (Potentially add sprites)
 - [ ] Compile to run on PiOS
 
