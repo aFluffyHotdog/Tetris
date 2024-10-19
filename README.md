@@ -6,6 +6,7 @@ Progress update:
 
 # TODO:
 - [ ] Finish row clearing function
+- [ ] Refactor row clearing function
 - [ ] Code block to slowly drop
 - [ ] Add start and end screen
 - [ ] (Potentially add sprites)
