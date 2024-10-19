@@ -1,25 +1,38 @@
 #include "raylib.h"
 #include "Game.h"
-#include "Board.h"
-#include "Tetromino.h"
-#include <iostream>
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
-int main(void)
+double lastUpdateTime = 0;
+
+bool EventTriggered(double interval)
+{
+    const double currentTime = GetTime();
+    if (currentTime - lastUpdateTime >= interval)
+    {
+        lastUpdateTime = currentTime;
+        return true;
+    }
+    return false;
+}
+
+int main()
 
 {
-    const int scrWidth = 600;
-    const int scrHeight = 1024;
+    constexpr int scrWidth = 600;
+    constexpr int scrHeight = 600;
     InitWindow(scrWidth, scrHeight, "Tetris");
     SetTargetFPS(60);
-    Game g = Game();
+    auto g = Game();
     while (!WindowShouldClose()) {
         //
         BeginDrawing();
         g.Draw();
         g.HandleInput();
+        if (EventTriggered(0.4)) {
+            g.MoveDown();
+        }
         EndDrawing();
         g.ClearRows();
         

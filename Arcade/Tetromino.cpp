@@ -7,7 +7,7 @@ Tetromino::Tetromino() {
     originXPos = 0;
     originYPos = 0;
 }
-Tetromino::Tetromino( int new_id) { 
+Tetromino::Tetromino(const int new_id) {
 
     id = new_id;
     rotationState = 0;
@@ -48,7 +48,7 @@ using namespace std;
 
 Hero::Hero()
 {   
-    rotationState = 1; //Spawns vertical
+    rotationState = 0; //Spawns vertical
     c = SKYBLUE;
     rotationStates[0] = {make_pair(1,0), make_pair(1,1), make_pair(1,2), make_pair(1,3)}; //rotation state 1 - 4
     rotationStates[1] = {make_pair(0,2), make_pair(1,2), make_pair(2,2), make_pair(3,2)};

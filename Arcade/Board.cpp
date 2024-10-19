@@ -26,15 +26,16 @@ void Board::Clear(int row, int col) {
 	grid[row][col]->Clear();
 }
 
-void Board::ShiftRows() {
-	for (int i = numRow; i >= 0; i--) {
+void Board::ShiftRows(int startRow) {
+	for (int i = startRow; i > 0; i--) {
 		for (int j = 0; j < numCol; j++) {
-			grid[i][j] = grid[i-1][j];
+			grid[i][j]->c = grid[i-1][j]->c;
+			grid[i][j]->exists = grid[i-1][j]->exists;
 		}
 	}
 }
 
-void Board::Clear(int row) {
+void Board::ClearRow(int row) {
 	for (int i = 0; i < 10; i++) {
 		grid[row][i]->Clear();
 	}
@@ -57,7 +58,7 @@ Color Board::Cell::GetColor() {
 }
 
 
-void Board::Draw(int screenWidth, int screenHeight){
+void Board::Draw(const int screenWidth, const int screenHeight){
 	float start_x = (screenWidth - (cellSize * 10)) / 2;
 	float start_y = (screenHeight - (cellSize * 20)) / 2;
 	for (int i = 0; i < numRow; i++) {

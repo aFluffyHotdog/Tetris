@@ -10,8 +10,11 @@ Game::Game() {
 	board = Board();
 	tetrominoes = GetAllTetrominoes();
 	SetActive();
-
+	screenWidth = 600;
+	screenHeight = 600;
 }
+
+
 
 std::vector<Tetromino> Game::GetAllTetrominoes() {
 	Hero h = Hero();
@@ -35,7 +38,7 @@ void Game::SetActive(){
 }
 
 void Game::Draw() {
-	board.Draw(600,1024);
+	board.Draw(screenWidth,screenHeight);
 	Game::DrawActive();
 }
 void Game::DrawActive() {
@@ -44,7 +47,7 @@ void Game::DrawActive() {
 	}
 }
 void Game::HandleInput() {
-	int keyPressed = GetKeyPressed();
+	const int keyPressed = GetKeyPressed();
 	switch (keyPressed)
 	{
 	case KEY_LEFT:
@@ -62,6 +65,7 @@ void Game::HandleInput() {
 		break;
 	case KEY_SPACE:
 		Game::Drop();
+
 		LockBlock();
 		break;
 	default:
@@ -128,6 +132,7 @@ bool Game::CheckInternalBlock(const pair<int, int>& p) {
 }
 
 bool Game::CheckRowFull(int row) {
+	//TODO replace with std::all_of()
 	for (const auto& cell : Game::board.grid[row]) {
 		if (!cell->exists) {
 			return false;
@@ -138,11 +143,21 @@ bool Game::CheckRowFull(int row) {
 }
 
 void Game::ClearRows() {
-	for (int i = 19; i >= 0; i--) {
+	for (int i = 19; i > 0; i--) {
 		if (CheckRowFull(i)) {
-			for (int j = 0; j < 9; i++) {
-				board.grid[i][j] = board.grid[i - 1][j];
-			}
+			// board.PrintRow(i);
+			// board.PrintRow(i-1);
+			// std::cout << "before clearing"<< std::endl;
+			// for (int j = 0; j < 9; j++) {
+			// 	board.grid[i][j]->c = board.grid[i - 1][j]->c;
+			// 	board.grid[i][j]->exists = board.grid[i - 1][j]->exists;
+			// 	board.ClearRow(i-1);
+			//
+			// }
+			// board.PrintRow(i);
+			// board.PrintRow(i-1);
+			// std::cout << "done clearing"<< std::endl;
+			board.ShiftRows(i);
 		}
 	}
 }
@@ -178,6 +193,11 @@ void Game::MoveDown() {
 		activePiece.originYPos++;
 		DrawActive();
 	}
+	else {
+		ClearRows();
+		SetActive();
+	}
+
 }
 
 void Game::MoveLeft() {

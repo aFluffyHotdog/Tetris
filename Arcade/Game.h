@@ -7,7 +7,10 @@ class Game
 {
 public:
 	Game();
-	std::vector<Tetromino> GetAllTetrominoes();
+
+	Game(int screenWidth, int screenHeight);
+
+	static std::vector<Tetromino> GetAllTetrominoes();
 	void Draw();
 
 	void DrawActive();
@@ -29,4 +32,5 @@ public:
 private:
 	std::vector<Tetromino> tetrominoes;
 	Tetromino activePiece;
+	int screenWidth, screenHeight;
 };
