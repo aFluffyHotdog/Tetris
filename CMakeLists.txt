@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(Tetris)
 
-find_package(raylib 3.0 REQUIRED) # Requires at least version 3.0
+find_package(raylib 3.0 REQUIRED) # Requires at least version 5.0
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
