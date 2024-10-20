@@ -5,7 +5,8 @@ Progress update:
 - Grid updating/drawing is working
 
 # TODO:
-- [ ] Refactor row clearing function
+- [ ] Refactor and test row clearing function
+- [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
 - [ ] Add start and end screen
 - [ ] Try shaders
 - [ ] (Potentially add sprites)
