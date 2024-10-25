@@ -14,6 +14,18 @@ Game::Game() {
 	screenHeight = 600;
 }
 
+Game::Game(const int newWidth, const int newHeight) {
+	board = Board();
+	tetrominoes = GetAllTetrominoes();
+	SetActive();
+	screenWidth = newWidth;
+	screenHeight = newHeight;
+}
+
+
+bool Game::CheckGameOver() {
+	return false;
+}
 
 
 std::vector<Tetromino> Game::GetAllTetrominoes() {
@@ -65,12 +77,10 @@ void Game::HandleInput() {
 		break;
 	case KEY_SPACE:
 		Game::Drop();
-
+		ClearRows();
 		LockBlock();
 		break;
 	default:
-		/*Game::MoveDown(); FINISH THE SLOW DROPPING
-		delay()*/
 		break;
 	}
 	
@@ -86,9 +96,9 @@ bool Game::CheckBounds(int rotationState, int y_offset, int x_offset)
 		if (!(((block.first + activePiece.originYPos + y_offset) >= 0) && ((block.first + activePiece.originYPos + y_offset) <= 19) && // check vertical bounds
 			((block.second + activePiece.originXPos + x_offset) >= 0) && ((block.second + activePiece.originXPos + x_offset) <= 9))) // check horizontal bounds
 		{
-			std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
-			std::cout << block.second + activePiece.originXPos + x_offset<< std::endl;
-			std::cout << "bounds invalid" << std::endl;
+			// std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
+			// std::cout << block.second + activePiece.originXPos + x_offset<< std::endl;
+			// std::cout << "bounds invalid" << std::endl;
 			return false;
 		}
 	}
@@ -170,7 +180,7 @@ void Game::LockBlock(){
 }
 void Game::Rotate() {
 
-	if (Game::CheckCollision(activePiece.rotationState + 1, 0, 0) && Game::CheckBounds(activePiece.rotationState + 1, 0, 0)) {
+	if (Game::CheckBounds(activePiece.rotationState + 1, 0, 0) && Game::CheckCollision(activePiece.rotationState + 1, 0, 0) ) {
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
@@ -185,7 +195,7 @@ void Game::Rotate() {
 }
 
 void Game::MoveDown() {
-	if (Game::CheckCollision(activePiece.rotationState, 1, 0) && Game::CheckBounds(activePiece.rotationState, 1, 0)) 
+	if ((Game::CheckBounds(activePiece.rotationState, 1, 0)) && (Game::CheckCollision(activePiece.rotationState, 1, 0)))
 	{
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);

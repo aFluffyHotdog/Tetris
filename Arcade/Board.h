@@ -11,7 +11,7 @@ public:
 		Cell();
 		void SetColor(Color c_in);
 		void Clear();
-		Color GetColor();
+		Color GetColor() const;
 		Color c;
 		bool exists;
 	};
@@ -22,9 +22,9 @@ public:
 	void ShiftRows(int startRow);
 	void SetColor(int row, int col, Color c);
 	void Clear(int row, int col);
-	void Draw(int screenWidth, int screenHeight);
+	void Draw(int screenWidth, int screenHeight) const;
 	void ClearRow(int row);
-	void PrintRow(int row);
+	void PrintRow(int row) const;
 	Cell* grid[20][10];
 private:
 	int numRow;

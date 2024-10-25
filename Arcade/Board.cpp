@@ -5,11 +5,6 @@ Board::Board()
 	numRow = 20;
 	numCol = 10;
 	cellSize = 30;
-	Initialize();
-}
-
-void Board::Initialize()
-{
 	for (int i = 0; i < numRow; i++) {
 		for (int j = 0; j < numCol; j++) {
 			grid[i][j] = new Cell();
@@ -19,14 +14,16 @@ void Board::Initialize()
 	}
 }
 
-void Board::SetColor(int row, int col, Color c) {
+
+
+void Board::SetColor(const int row, const int col, const Color c) {
 	grid[row][col]->SetColor(c);
 }
-void Board::Clear(int row, int col) {
+void Board::Clear(const int row, const int col) {
 	grid[row][col]->Clear();
 }
 
-void Board::ShiftRows(int startRow) {
+void Board::ShiftRows(const int startRow) {
 	for (int i = startRow; i > 0; i--) {
 		for (int j = 0; j < numCol; j++) {
 			grid[i][j]->c = grid[i-1][j]->c;
@@ -35,13 +32,14 @@ void Board::ShiftRows(int startRow) {
 	}
 }
 
-void Board::ClearRow(int row) {
+void Board::ClearRow(const int row) {
 	for (int i = 0; i < 10; i++) {
 		grid[row][i]->Clear();
 	}
 }
 Board::Cell::Cell() {
 	c = WHITE;
+	exists = false;
 }
 
 void Board::Cell::SetColor(Color c_in) {
@@ -53,14 +51,14 @@ void Board::Cell::Clear() {
 	c = BLACK;
 }
 
-Color Board::Cell::GetColor() {
+Color Board::Cell::GetColor() const {
 	return c;
 }
 
 
-void Board::Draw(const int screenWidth, const int screenHeight){
-	float start_x = (screenWidth - (cellSize * 10)) / 2;
-	float start_y = (screenHeight - (cellSize * 20)) / 2;
+void Board::Draw(const int screenWidth, const int screenHeight) const {
+	int start_x = (screenWidth - (cellSize * 10)) / 2;
+	int start_y = (screenHeight - (cellSize * 20)) / 2;
 	for (int i = 0; i < numRow; i++) {
 		start_x = (screenWidth - (cellSize * 10)) / 2;
 		for (int j = 0; j < numCol; j++) {
@@ -75,7 +73,7 @@ void Board::Draw(const int screenWidth, const int screenHeight){
 	}
 }
 
-void Board::PrintRow(int row) {
+void Board::PrintRow(const int row) const {
 		for (int j = 0; j < numCol; j++) {
 			std::cout << grid[row][j]->exists;
 		}

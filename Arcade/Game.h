@@ -1,14 +1,13 @@
 #pragma once
 #include <string>
 #include <raylib.h>
-#include "board.h"
 #include "Tetromino.h"
 class Game
 {
 public:
 	Game();
 
-	Game(int screenWidth, int screenHeight);
+	Game(int newWidth, int newHeight);
 
 	static std::vector<Tetromino> GetAllTetrominoes();
 	void Draw();
@@ -21,6 +20,7 @@ public:
 	bool CheckCollision(int rotationState, int y_offset, int x_offset);
 	bool CheckInternalBlock(const pair<int, int>& p);
 	bool CheckRowFull(int row);
+	bool CheckGameOver();
 	void ClearRows();
 	void LockBlock();
 	void Rotate();
@@ -28,6 +28,9 @@ public:
 	void MoveLeft();
 	void MoveRight();
 	void Drop();
+
+
+
 	Board board;
 private:
 	std::vector<Tetromino> tetrominoes;
