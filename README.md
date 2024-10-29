@@ -1,10 +1,10 @@
 # Arcade Machine Project
 
 Progress update:
-- Game can be played!
+- Game can be played (for the most part)!
 
 # TODO:
-- [ ] Refactor and test row clearing function
+- [ ] Fix clearing more than one row
 - [ ] Add sounds
 - [ ] Hold block feaure
 - [ ] Next block feature
