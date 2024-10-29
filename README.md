@@ -1,11 +1,13 @@
 # Arcade Machine Project
 
 Progress update:
-- Collision is working
-- Grid updating/drawing is working
+- Game can be played!
 
 # TODO:
 - [ ] Refactor and test row clearing function
+- [ ] Add sounds
+- [ ] Hold block feaure
+- [ ] Next block feature
 - [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
 - [x] Add start and end screen
 - [ ] Try shaders
