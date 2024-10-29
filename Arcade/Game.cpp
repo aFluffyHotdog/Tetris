@@ -1,9 +1,7 @@
 #include "Game.h"
 #include <random>
 #include "raylib.h"
-#include <random>
 #include <vector>
-#include <iostream>
 #include "Tetromino.h"
 
 Game::Game() {
@@ -20,22 +18,20 @@ Game::Game(const int newWidth, const int newHeight) {
 	SetActive();
 	screenWidth = newWidth;
 	screenHeight = newHeight;
+	gameOver = false;
 }
 
 
-bool Game::CheckGameOver() {
-	return false;
-}
 
 
 std::vector<Tetromino> Game::GetAllTetrominoes() {
-	Hero h = Hero();
-	B_Ricky b = B_Ricky();
-	O_Ricky o = O_Ricky();
-	SmashBoi s = SmashBoi();
-	Cleveland_Z c = Cleveland_Z();
-	Rhode_Z r = Rhode_Z();
-	TeeWee t = TeeWee();
+	auto h = Hero();
+	auto b = B_Ricky();
+	auto o = O_Ricky();
+	auto s = SmashBoi();
+	auto c = Cleveland_Z();
+	auto r = Rhode_Z();
+	auto t = TeeWee();
 	return { h,b,o,s,c,r,t };
 }
 
@@ -43,10 +39,15 @@ void Game::SetActive(){
 	if (tetrominoes.empty()) {
 		tetrominoes = Game::GetAllTetrominoes();
 	}
-	int randomIndex = std::rand() % tetrominoes.size();
+	std::random_device rd; // obtain a random number from hardware
+	std::mt19937 gen(rd()); // seed the generator
+	std::uniform_int_distribution<> int_distribution(0, tetrominoes.size()-1); // define the range
+	const int randomIndex = int_distribution(gen);
 	activePiece = tetrominoes[randomIndex];
 	tetrominoes.erase(tetrominoes.begin() + randomIndex);
-	activePiece.active = true;
+	if (!SpawnCheck()) {
+		gameOver = true;
+	}
 }
 
 void Game::Draw() {
@@ -77,8 +78,6 @@ void Game::HandleInput() {
 		break;
 	case KEY_SPACE:
 		Game::Drop();
-		ClearRows();
-		LockBlock();
 		break;
 	default:
 		break;
@@ -96,9 +95,6 @@ bool Game::CheckBounds(int rotationState, int y_offset, int x_offset)
 		if (!(((block.first + activePiece.originYPos + y_offset) >= 0) && ((block.first + activePiece.originYPos + y_offset) <= 19) && // check vertical bounds
 			((block.second + activePiece.originXPos + x_offset) >= 0) && ((block.second + activePiece.originXPos + x_offset) <= 9))) // check horizontal bounds
 		{
-			// std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
-			// std::cout << block.second + activePiece.originXPos + x_offset<< std::endl;
-			// std::cout << "bounds invalid" << std::endl;
 			return false;
 		}
 	}
@@ -114,13 +110,24 @@ bool Game::CheckCollision(int rotationState, int y_offset, int x_offset)
 		if (CheckInternalBlock(std::make_pair(block.first + activePiece.originYPos + y_offset, block.second + activePiece.originXPos + x_offset))) { 
 			if ((board.grid[block.first + activePiece.originYPos + y_offset][block.second + activePiece.originXPos + x_offset]->exists))
 			{
-
-				std::cout << block.first + activePiece.originYPos + y_offset << std::endl;
-				std::cout << block.second + activePiece.originXPos + x_offset << std::endl;
-				std::cout << "collision invalid" << std::endl;
 				return false;
 			}
 		}
+	}
+	return true;
+}
+
+//Check if the block that is about to spawn can be spawned in, used for checking gameOver status.
+bool Game::SpawnCheck()
+{
+	for (const auto& block : activePiece.rotationStates[activePiece.rotationState])
+	{
+		if((board.grid[block.first + activePiece.originYPos][block.second + activePiece.originXPos]->exists))
+			{
+			    board.PrintRow(block.first + activePiece.originYPos);
+				return false;
+			}
+
 	}
 	return true;
 }
@@ -129,66 +136,26 @@ bool Game::CheckInternalBlock(const pair<int, int>& p) {
 	vector<pair<int, int>> internal_pos;
 	for (const auto& block : activePiece.rotationStates[activePiece.rotationState])
 	{
-		internal_pos.push_back(std::make_pair(block.first + activePiece.originYPos, block.second + activePiece.originXPos));
+		internal_pos.emplace_back(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 	}
 	for (const auto& pairInList : internal_pos) {
 		if (p == pairInList) {
-			/*std::cout << p.first + "was inside" << std::endl;
-			std::cout << p.second + "was inside" << std::endl;*/
 			return false; // Pair is found, so it's in the list
 		}
 	}
 	return true; // Pair is not found, so it's not in the list
 }
 
-bool Game::CheckRowFull(int row) {
-	//TODO replace with std::all_of()
-	for (const auto& cell : Game::board.grid[row]) {
-		if (!cell->exists) {
-			return false;
-		}
-	}
-	return true;
 
-}
 
-void Game::ClearRows() {
-	for (int i = 19; i > 0; i--) {
-		if (CheckRowFull(i)) {
-			// board.PrintRow(i);
-			// board.PrintRow(i-1);
-			// std::cout << "before clearing"<< std::endl;
-			// for (int j = 0; j < 9; j++) {
-			// 	board.grid[i][j]->c = board.grid[i - 1][j]->c;
-			// 	board.grid[i][j]->exists = board.grid[i - 1][j]->exists;
-			// 	board.ClearRow(i-1);
-			//
-			// }
-			// board.PrintRow(i);
-			// board.PrintRow(i-1);
-			// std::cout << "done clearing"<< std::endl;
-			board.ShiftRows(i);
-		}
-	}
-}
-void Game::LockBlock(){
-		board.PrintRow(19);
-		//activePiece.active = false;
-		//board.PrintRow(19);
-		SetActive();
-	
-}
+
+
 void Game::Rotate() {
 
 	if (Game::CheckBounds(activePiece.rotationState + 1, 0, 0) && Game::CheckCollision(activePiece.rotationState + 1, 0, 0) ) {
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
-		/*if (activePiece.rotationState + 1 > size(activePiece.rotationStates)) {*/
-			// std::cout << "next rotation state" << std::endl;
-			// std::cout << size(activePiece.rotationStates) << std::endl;
-			// std::cout << (activePiece.rotationState + 1) % (size(activePiece.rotationStates)) << std::endl;
-		// }
 		activePiece.rotationState = (activePiece.rotationState + 1) % activePiece.rotationStates.size();
 		activePiece.Draw(board);
 	}
@@ -204,7 +171,7 @@ void Game::MoveDown() {
 		DrawActive();
 	}
 	else {
-		ClearRows();
+		board.ClearRows();
 		SetActive();
 	}
 

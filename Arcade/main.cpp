@@ -42,11 +42,17 @@ int main() {
                 }
             }
             case GAMEPLAY: {
-                if (g.CheckGameOver()) {
+                if (g.gameOver) {
+                    g = Game(scrWidth, scrHeight);
                     currScreen = ENDING;
                 }
             }
             case ENDING: {
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currScreen = GAMEPLAY;
+                    break;
+                }
             }
         }
 
@@ -62,10 +68,6 @@ int main() {
 
             case GAMEPLAY: {
                 DrawText("hello", 200, 200, 12,  WHITE);
-                if (g.CheckGameOver()) {
-                    currScreen = ENDING;
-                    break;
-                }
                 g.Draw();
                 g.HandleInput();
                 if (EventTriggered(0.4)) {
@@ -74,7 +76,9 @@ int main() {
                 break;
             }
             case ENDING: {
-                CloseWindow();
+                DrawText("Hah! You lost!", 150, 200, 24,  WHITE);
+                DrawText("Press ENTER to try again", 150, 300, 16,  WHITE);
+                break;
             }
         }
         EndDrawing();

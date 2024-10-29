@@ -12,18 +12,18 @@ public:
 		void SetColor(Color c_in);
 		void Clear();
 		Color GetColor() const;
-		Color c;
+		Color c{};
 		bool exists;
 	};
 public:
 	Board();
-	//Board(int row, int column, int cellSize);
-	void Initialize();
 	void ShiftRows(int startRow);
 	void SetColor(int row, int col, Color c);
 	void Clear(int row, int col);
 	void Draw(int screenWidth, int screenHeight) const;
 	void ClearRow(int row);
+	void ClearRows();
+	bool CheckRowFull(int row);
 	void PrintRow(int row) const;
 	Cell* grid[20][10];
 private:

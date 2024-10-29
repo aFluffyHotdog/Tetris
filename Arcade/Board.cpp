@@ -37,6 +37,25 @@ void Board::ClearRow(const int row) {
 		grid[row][i]->Clear();
 	}
 }
+
+bool Board::CheckRowFull(int row) {
+	//TODO replace with std::all_of()
+	for (const auto& cell : grid[row]) {
+		if (!cell->exists) {
+			return false;
+		}
+	}
+	return true;
+
+}
+
+void Board::ClearRows() {
+	for (int i = 19; i > 0; i--) {
+		if (CheckRowFull(i)) {
+			ShiftRows(i);
+		}
+	}
+}
 Board::Cell::Cell() {
 	c = WHITE;
 	exists = false;

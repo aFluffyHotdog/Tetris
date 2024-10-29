@@ -11,18 +11,16 @@ public:
 
 	static std::vector<Tetromino> GetAllTetrominoes();
 	void Draw();
-
 	void DrawActive();
-
 	void HandleInput();
 	void SetActive();
+
 	bool CheckBounds(int rotationState, int y_offset, int x_offset);
 	bool CheckCollision(int rotationState, int y_offset, int x_offset);
 	bool CheckInternalBlock(const pair<int, int>& p);
-	bool CheckRowFull(int row);
-	bool CheckGameOver();
-	void ClearRows();
-	void LockBlock();
+	bool SpawnCheck();
+
+
 	void Rotate();
 	void MoveDown();
 	void MoveLeft();
@@ -32,6 +30,7 @@ public:
 
 
 	Board board;
+	bool gameOver;
 private:
 	std::vector<Tetromino> tetrominoes;
 	Tetromino activePiece;
