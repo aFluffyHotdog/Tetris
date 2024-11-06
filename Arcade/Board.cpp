@@ -49,10 +49,14 @@ bool Board::CheckRowFull(int row) {
 
 }
 
-void Board::ClearRows() {
-	for (int i = 19; i > 0; i--) {
-		if (CheckRowFull(i)) {
+void Board::CheckRowsAndSlide() {
+	int i = 19;
+	while(i > 0) {
+		if(CheckRowFull(i)) {
 			ShiftRows(i);
+		}
+		else {
+			i--;
 		}
 	}
 }
@@ -97,4 +101,4 @@ void Board::PrintRow(const int row) const {
 			std::cout << grid[row][j]->exists;
 		}
 		std::cout << std::endl;
-	}
+}

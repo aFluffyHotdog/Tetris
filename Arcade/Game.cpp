@@ -10,6 +10,7 @@ Game::Game() {
 	SetActive();
 	screenWidth = 600;
 	screenHeight = 600;
+	cellSize = 30;
 }
 
 Game::Game(const int newWidth, const int newHeight) {
@@ -56,9 +57,27 @@ void Game::Draw() {
 }
 void Game::DrawActive() {
 	for (const auto &block : activePiece.rotationStates[activePiece.rotationState]) {
-		board.SetColor(block.first + activePiece.originYPos, block.second + activePiece.originXPos, activePiece.c);
+		board.SetColor(block.first + activePiece.originYPos, block.second + activePiece.originXPos, activePiece.color);
 	}
 }
+
+void Game::DrawBoard() const {
+	int start_x = (screenWidth - (cellSize * 10)) / 2;
+	int start_y = (screenHeight - (cellSize * 20)) / 2;
+	for (int i = 0; i < 20; i++) {
+		start_x = (screenWidth - (cellSize * 10)) / 2;
+		for (int j = 0; j < 10; j++) {
+			DrawRectangle(start_x, start_y, cellSize, cellSize, BLACK);
+			DrawRectangleLines(start_x, start_y, cellSize, cellSize, WHITE);
+			if (board.grid[i][j]->exists == true) {
+				DrawRectangle(start_x, start_y, cellSize - 3, cellSize - 3, board.grid[i][j]->GetColor());
+			}
+			start_x += cellSize;
+		}
+		start_y += cellSize;
+	}
+}
+
 void Game::HandleInput() {
 	const int keyPressed = GetKeyPressed();
 	switch (keyPressed)
@@ -74,10 +93,11 @@ void Game::HandleInput() {
 		break;
 	case KEY_DOWN:
 		Game::MoveDown();
-		//CheckAndLockBlock();
+		board.CheckRowsAndSlide();
 		break;
 	case KEY_SPACE:
 		Game::Drop();
+		board.CheckRowsAndSlide();
 		break;
 	default:
 		break;
@@ -151,17 +171,18 @@ bool Game::CheckInternalBlock(const pair<int, int>& p) {
 
 
 void Game::Rotate() {
-
+	// Check for in bound + collision
 	if (Game::CheckBounds(activePiece.rotationState + 1, 0, 0) && Game::CheckCollision(activePiece.rotationState + 1, 0, 0) ) {
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
 		activePiece.rotationState = (activePiece.rotationState + 1) % activePiece.rotationStates.size();
-		activePiece.Draw(board);
+		DrawActive();
 	}
 }
 
 void Game::MoveDown() {
+	// Check for in bound + collision
 	if ((Game::CheckBounds(activePiece.rotationState, 1, 0)) && (Game::CheckCollision(activePiece.rotationState, 1, 0)))
 	{
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
@@ -171,31 +192,33 @@ void Game::MoveDown() {
 		DrawActive();
 	}
 	else {
-		board.ClearRows();
+		board.CheckRowsAndSlide();
 		SetActive();
 	}
 
 }
 
 void Game::MoveLeft() {
+	// Check for in bound + collision
 	if (Game::CheckBounds(activePiece.rotationState, 0, -1) && Game::CheckCollision(activePiece.rotationState, 0, -1))
 	{
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
 		activePiece.originXPos--;
-		activePiece.Draw(board);
+		DrawActive();
 	}
 }
 
 void Game::MoveRight() {
+	// Check for in bound + collision
 	if (Game::CheckBounds(activePiece.rotationState, 0, 1) && Game::CheckCollision(activePiece.rotationState, 0, 1))
 	{
 		for (const auto& block : activePiece.rotationStates[activePiece.rotationState]) {
 			board.Clear(block.first + activePiece.originYPos, block.second + activePiece.originXPos);
 		}
 		activePiece.originXPos++;
-		activePiece.Draw(board);
+		DrawActive();
 	}
 }
 
@@ -204,6 +227,7 @@ void Game::Drop() {
 		Game::MoveDown();
 	}
 }
+
 
 
 
