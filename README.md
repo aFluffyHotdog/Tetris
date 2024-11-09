@@ -4,15 +4,14 @@ Progress update:
 - Game can be played (for the most part)!
 
 # TODO:
-- [ ] Fix clearing more than one row
+- [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
 - [ ] Add sounds
 - [ ] Hold block feaure
 - [ ] Next block feature
-- [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
 - [x] Add start and end screen
 - [ ] Try shaders
 - [ ] (Potentially add sprites)
-- [ ] Compile to run on PiOS
+- [ ] Compile to run on PiOS *held back by OpenGl issues
 
 # Installion steps (on Mac, using CLion because people seem to not like Visual Studio)
 
