@@ -17,3 +17,6 @@ Progress update:
 
 1. Using homebrew run `brew install raylib`
 2. Clone this repo and use the CMakeLists file included and you should be good actually?!
+
+# For Pi
+sudo apt install cmake make git build-essential libx11-dev libxcursor-dev libxrandr-dev libxi-dev
