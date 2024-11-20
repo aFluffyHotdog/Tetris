@@ -15,7 +15,10 @@ add_executable(${PROJECT_NAME}
         Arcade/Board.h
         Arcade/Game.h
         Arcade/Tetromino.h
-        Arcade/main.cpp)
+        Arcade/main.cpp
+        Arcade/NetworkHandler.cpp
+        Arcade/NetworkHandler.h
+)
 
 target_link_libraries(${PROJECT_NAME} raylib)
 
