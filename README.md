@@ -11,12 +11,12 @@ Progress update:
 - [x] Add start and end screen
 - [ ] Try shaders
 - [ ] (Potentially add sprites)
-- [ ] Compile to run on PiOS *held back by OpenGl issues
+- [x] Compile to run on PiOS *held back by OpenGl issues
 
 # Installion steps (on Mac, using CLion because people seem to not like Visual Studio)
 
 1. Using homebrew run `brew install raylib`
 2. Clone this repo and use the CMakeLists file included and you should be good actually?!
 
-# For Pi
-sudo apt install cmake make git build-essential libx11-dev libxcursor-dev libxrandr-dev libxi-dev
+# For installation on the Raspberry Pi please refer to the wiki we have a very long ass detailed guide.
+
