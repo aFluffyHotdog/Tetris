@@ -1,7 +1,7 @@
 # Arcade Machine Project
 
 Progress update:
-- Game can be played (for the most part)!
+- Game is running on the Raspberry Pi (after countless hours spent on Cmake and OpenGL issues)
 
 # TODO:
 - [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
