@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS -pthread)
 # set(raylib_DIR "/home/arcade2/Tetris/raylib")
 find_package(Threads REQUIRED)
+find_package(raylib 3.0 REQUIRED)  # comment this out on RPI
 # Dependencies
 #include(FetchContent)
 #FetchContent_Declare(
@@ -20,22 +21,26 @@ find_package(Threads REQUIRED)
 
 
 add_executable(${PROJECT_NAME}
-        main.cpp
-        Game.cpp
-        Board.cpp
-        Tetromino.cpp
-        Board.h
-        Game.h
-        Tetromino.h
-        main.cpp
+        Arcade/main.cpp
+        Arcade/Game.cpp
+        Arcade/Board.cpp
+        Arcade/Tetromino.cpp
+        Arcade/Board.h
+        Arcade/Game.h
+        Arcade/Tetromino.h
+        Arcade/main.cpp
+        Arcade/Button.cpp
+        Arcade/Button.h
 )
 
 #target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_INCLUDE})
 #target_link_libraries(${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
-#target_link_libraries(${PROJECT_NAME} raylib)
-target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-find_library(RAYLIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/libraylib.a)
-target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/lib/libraylib.a dl)
+target_link_libraries(${PROJECT_NAME} raylib)  # uncoment this on PC
+
+# Uncomment for RPI
+#target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#find_library(RAYLIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/libraylib.a)
+#target_link_libraries(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/lib/libraylib.a dl)
 
 
 # Checks if OSX and links appropriate frameworks (only required on MacOS)
