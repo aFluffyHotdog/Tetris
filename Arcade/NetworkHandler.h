@@ -4,20 +4,18 @@
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
-#include "Networking.h"
-// C++ program to illustrate the client application in the
-// socket programming with error checking
-#include <cstring>
-#include <iostream>
 #include <netinet/in.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <arpa/inet.h> // For inet_addr()
 
 
-class Networking {
+class NetworkHandler {
+public:
     sockaddr_in serverAddress{};
-    Networking(int port_no, char *ip_address);
+    int clientSocket;
+
+    NetworkHandler(int port_no, char *ip_address);
+    void Connect();
+    void SendMessage();
+    void Close();
 };
 
 

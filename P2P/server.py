@@ -6,9 +6,9 @@ from protocols import handle_received_message, send_protocol_message
 from game_logic import update_game_state
 
 # Server setup
-SERVER_IP = '192.168.3.116'
+SERVER_IP = '127.0.0.1'
 SEND_PORT = 8081
-RECV_PORT = 8082
+RECV_PORT = 8080
 
 # 1) SET UP SOCKETS, LISTEN, ACCEPT
 # Socket to send messages
@@ -53,23 +53,7 @@ def receive_messages():
         data = recv_conn.recv(1024).decode()
         if data:
             handle_received_message(data)
-            print("Enter: ", end='', flush=True)  # Reprint the "Enter: " prompt
+            print(data, flush=True)  # Reprint the "Enter: " prompt
 
 
-# Send receive threads
-send_thread = threading.Thread(target=send_messages)
-recv_thread = threading.Thread(target=receive_messages)
-
-# Start threads
-send_thread.start()
-recv_thread.start()
-
-# Loop (wait for join)
-send_thread.join()
-recv_thread.join()
-
-# Close the connections
-send_conn.close()
-recv_conn.close()
-send_socket.close()
-recv_socket.close()
+receive_messages()

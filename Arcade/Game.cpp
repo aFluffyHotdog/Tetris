@@ -20,6 +20,7 @@ Game::Game(const int newWidth, const int newHeight) {
 	screenWidth = newWidth;
 	screenHeight = newHeight;
 	gameOver = false;
+	cellSize = 30;
 }
 
 
@@ -52,8 +53,9 @@ void Game::SetActive(){
 }
 
 void Game::Draw() {
-	board.Draw(screenWidth,screenHeight);
-	Game::DrawActive();
+	//board.Draw(screenWidth,screenHeight);
+	DrawBoard();
+	DrawActive();
 }
 void Game::DrawActive() {
 	for (const auto &block : activePiece.rotationStates[activePiece.rotationState]) {
@@ -61,16 +63,15 @@ void Game::DrawActive() {
 	}
 }
 
-void Game::DrawBoard() const {
-	int start_x = (screenWidth - (cellSize * 10)) / 2;
+void Game::DrawBoard() {
 	int start_y = (screenHeight - (cellSize * 20)) / 2;
-	for (int i = 0; i < 20; i++) {
-		start_x = (screenWidth - (cellSize * 10)) / 2;
-		for (int j = 0; j < 10; j++) {
+	for (const auto & i : board.grid) {
+		int start_x = (screenWidth - (cellSize * 10)) / 2;
+		for (auto j : i) {
 			DrawRectangle(start_x, start_y, cellSize, cellSize, BLACK);
 			DrawRectangleLines(start_x, start_y, cellSize, cellSize, WHITE);
-			if (board.grid[i][j]->exists == true) {
-				DrawRectangle(start_x, start_y, cellSize - 3, cellSize - 3, board.grid[i][j]->GetColor());
+			if (j->exists == true) {
+				DrawRectangle(start_x, start_y, cellSize - 3, cellSize - 3, j->GetColor());
 			}
 			start_x += cellSize;
 		}

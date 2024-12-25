@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-#include <raylib.h>
 #include "Tetromino.h"
 class Game
 {
@@ -15,7 +13,7 @@ public:
 	/// Updates the grid to match the active piece's location
 	void DrawActive();
 	/// Draws the board on the window.
-	void DrawBoard() const;
+	void DrawBoard();
 
 	/// Handle rotation, moving left, right, and down
 	void HandleInput();
@@ -42,14 +40,12 @@ public:
 	/// Drops the active piece down as low as it could possibly be dropped.
 	void Drop();
 
-
-
 	Board board;
 	bool gameOver;
 	int cellSize;
 
 private:
-	/// List of all 7 tetrominoes
+	/// the 7 tetrominoes we use to randomize during game loop
 	std::vector<Tetromino> tetrominoes;
 	/// The current piece the player is in control of
 	Tetromino activePiece;

@@ -79,26 +79,24 @@ Color Board::Cell::GetColor() const {
 }
 
 
-void Board::Draw(const int screenWidth, const int screenHeight) const {
-	int start_x = (screenWidth - (cellSize * 10)) / 2;
-	int start_y = (screenHeight - (cellSize * 20)) / 2;
-	for (int i = 0; i < numRow; i++) {
-		start_x = (screenWidth - (cellSize * 10)) / 2;
-		for (int j = 0; j < numCol; j++) {
-			DrawRectangle(start_x, start_y, cellSize, cellSize, BLACK);
-			DrawRectangleLines(start_x, start_y, cellSize, cellSize, WHITE);
-			if (grid[i][j]->exists == true) {
-				DrawRectangle(start_x, start_y, cellSize - 3, cellSize - 3, grid[i][j]->GetColor());
-			}
-			start_x += cellSize;
-		}
-		start_y += cellSize;
-	}
-}
+
 
 void Board::PrintRow(const int row) const {
 		for (int j = 0; j < numCol; j++) {
 			std::cout << grid[row][j]->exists;
 		}
 		std::cout << std::endl;
+}
+
+Color Board::getColor(const int row, const int col) const {
+	return grid[row][col]->GetColor();
+}
+
+Board::~Board() {
+	// for (int i = 0; i < numRow; i++) {
+	// 	for (int j = 0; j < numCol; j++) {
+	// 		delete grid[i][j]; // Delete each dynamically allocated Cell
+	// 		grid[i][j] = nullptr; // Set the pointer to nullptr for safety
+	// 	}
+	// }
 }

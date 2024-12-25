@@ -22,13 +22,21 @@ public:
 	void SetColor(int row, int col, Color c);
 	/// Sets the cell back to its default state
 	void Clear(int row, int col);
-	///
-	void Draw(int screenWidth, int screenHeight) const;
+	/// Clears an entire row per user input
 	void ClearRow(int row);
+	/// Iterate through the board, if a row is filled, slide all rows above it down
 	void CheckRowsAndSlide();
+	/// Returns True if a row is filled
 	bool CheckRowFull(int row);
+	/// Prints out a string representation of a row (for debugging)
 	void PrintRow(int row) const;
+	/// returns the color of cell based on row and col index.
+	Color getColor(int row, int col) const;
+
+	~Board();
 	Cell* grid[20][10];
+
+	//~Board();
 private:
 	int numRow;
 	int numCol;

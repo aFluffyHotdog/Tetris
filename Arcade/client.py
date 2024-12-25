@@ -4,10 +4,11 @@ import sys
 import select
 from protocols import handle_received_message, send_protocol_message
 from game_logic import update_game_state
+from Cython.Build import cythonize
 
 # Client setup
-SERVER_IP = '192.168.3.116'
-SEND_PORT = 8082
+SERVER_IP = '127.0.0.1'
+SEND_PORT = 8080
 RECV_PORT = 8081
 
 # Socket to send
@@ -35,28 +36,16 @@ def send_messages():
         key = non_blocking_input("Enter: ")  # Prompting for input non-blockingly
         if key:
             game_state = update_game_state(key, "2")
-            send_protocol_message(send_socket, game_state)
+            send_protocol_message(send_socket, "hi")
 
 # Receive func
 def receive_messages():
     while True:
         data = recv_socket.recv(1024).decode()
+        print(type(data))
         if data:
+            print(data)
             handle_received_message(data)
-            print("Enter: ", end='', flush=True)  # Reprint the "Enter: " prompt
+            # print("Enter: ", end='', flush=True)  # Reprint the "Enter: " prompt
 
-# Send receive threads
-send_thread = threading.Thread(target=send_messages)
-recv_thread = threading.Thread(target=receive_messages)
-
-# Start threads
-send_thread.start()
-recv_thread.start()
-
-# Loop (wait for join)
-send_thread.join()
-recv_thread.join()
-
-# Close the connections
-send_socket.close()
-recv_socket.close()
+send_messages()
