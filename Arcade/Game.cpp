@@ -104,6 +104,9 @@ int Game::HandleInput() {
 		Game::Drop();
 		cleared_shit = board.CheckFullRowsAndSlide();
 		return cleared_shit;
+	case KEY_X:
+		board.ShiftRowsUp(3);
+		return 0;
 	default:
 		return 0;
 	}

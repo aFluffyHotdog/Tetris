@@ -17,7 +17,10 @@ public:
 	};
 	Board();
 	/// Starting from startRow, shift all the rows above it downwards
-	void ShiftRows(int startRow);
+	void ShiftRowsDown(int startRow) const;
+
+	void ShiftRowsUp(int rowsOffset) const;
+
 	/// Sets the color of a cell
 	void SetColor(int row, int col, Color c);
 	/// Sets the cell back to its default state

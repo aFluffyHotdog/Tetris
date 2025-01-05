@@ -23,11 +23,29 @@ void Board::Clear(const int row, const int col) {
 	grid[row][col]->Clear();
 }
 
-void Board::ShiftRows(const int startRow) {
+void Board::ShiftRowsDown(const int startRow) const {
 	for (int i = startRow; i > 0; i--) {
 		for (int j = 0; j < numCol; j++) {
 			grid[i][j]->c = grid[i-1][j]->c;
 			grid[i][j]->exists = grid[i-1][j]->exists;
+		}
+	}
+}
+
+
+void Board::ShiftRowsUp(const int rowsOffset) const {
+	// Shift all the rows up
+	for (int i = 0; i < 20-rowsOffset; i++) {
+		for (int j = 0; j < numCol; j++) {
+			grid[i][j]->c = grid[i + rowsOffset][j]->c;
+			grid[i][j]->exists = grid[i + rowsOffset][j]->exists;
+		}
+	}
+	// Replace the rows that got moved up with gray blocks
+	for (int i = 19; i > 19 - rowsOffset; i--) {
+		for (int j = 0; j < 10; j++) {
+			grid[i][j]->c = DARKGRAY;
+			grid[i][j]->exists = true;
 		}
 	}
 }
@@ -45,7 +63,7 @@ void Board::AddRows(int numRows) {
 bool Board::CheckRowFull(int row) {
 	//TODO replace with std::all_of()
 	for (const auto& cell : grid[row]) {
-		if (!cell->exists) {
+		if (!cell->exists || ColorToInt(cell->c) == ColorToInt(DARKGRAY)) {
 			return false;
 		}
 	}
@@ -59,7 +77,7 @@ int Board::CheckFullRowsAndSlide() {
 	while(i > 0) {
 		if(CheckRowFull(i)) {
 			rowsFull++;
-			ShiftRows(i);
+			ShiftRowsDown(i);
 		}
 		else {
 			i--;
