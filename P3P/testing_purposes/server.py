@@ -13,8 +13,7 @@ def handle_client(client_socket, other_client_socket, client_id):
             print(f"Client {client_id} sent: {received_message}")
             
             # Forward the message to the other client
-            response_message = f"Message from Client {client_id}: {received_message}"
-            other_client_socket.sendall(response_message.encode('utf-8'))
+            other_client_socket.sendall(received_message.encode('utf-8'))
     except ConnectionResetError:
         print(f"Client {client_id} connection reset.")
     finally:
