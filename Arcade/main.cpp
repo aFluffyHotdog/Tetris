@@ -157,10 +157,12 @@ int main() {
                     multiplayerMenuButtons[multiplayerMenuButtonIndex].setSelected(false);
                     multiplayerMenuButtonIndex = (multiplayerMenuButtonIndex + 1) % 3;
                     multiplayerMenuButtons[multiplayerMenuButtonIndex].setSelected(true);
+                    std::cout << multiplayerMenuButtonIndex << std::endl;
                 }
                 if (IsKeyPressed(KEY_ENTER) )
                 {
-                    switch (startMenuButtonIndex) {
+                    std::cout << "selection index" << multiplayerMenuButtonIndex << std::endl;
+                    switch (multiplayerMenuButtonIndex) {
                         case 0: {
                             currScreen = MULTI_HOST;
                             break;
@@ -170,6 +172,7 @@ int main() {
                             break;
                         }
                         case 2: {
+                            std::cout << "going back to start menu" << startMenuButtonIndex << std::endl;
                             currScreen = START;
                             break;
                         }
@@ -215,13 +218,16 @@ int main() {
             }
 
             case SINGLE_PLAYER: {
-                BeginShaderMode(scanLines);
+                //BeginShaderMode(scanLines);
                 g.Draw();
-                g.HandleInput();
+                int rows_full = g.HandleInput();
+                if ( rows_full > 0) {
+                    std::cout << rows_full << std::endl;
+                }
                 if (EventTriggered(0.4)) {
                     g.MoveDown();
                 }
-                EndShaderMode();
+                //EndShaderMode();
                 break;
             }
             case ENDING: {

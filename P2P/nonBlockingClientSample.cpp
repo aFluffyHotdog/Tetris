@@ -11,7 +11,7 @@ int main(){
 	
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(8080);
+	serverAddress.sin_port = htons(12345);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 	
 	connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
@@ -32,9 +32,22 @@ int main(){
 		cout << "it's non blocking now?" << endl;
 	}
 	
-	cout << "initializing server" << endl;
+	cout << "initializing client" << endl;
 	int i = 0;
 	char buffer[1024] = {0};
+    bool player2Ready = false;
+    while (!player2Ready) {
+    	int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+    	if (bytesReceived < 0) {
+    		continue;
+    	}
+    	buffer[bytesReceived] = '\0';
+        if (strncmp(buffer, "client 2 connected", sizeof(buffer)) == 0) {
+          player2Ready = true;
+        }
+    	cout << "received " << buffer << endl;
+    }
 
 	while (true) {
 		send(clientSocket, message, strlen(message), 0);

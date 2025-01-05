@@ -24,8 +24,11 @@ public:
 	void Clear(int row, int col);
 	/// Clears an entire row per user input
 	void ClearRow(int row);
-	/// Iterate through the board, if a row is filled, slide all rows above it down
-	void CheckRowsAndSlide();
+
+	void AddRows(int num);
+
+	/// Iterates through the board, if a row is filled, slide all rows above it down. Returns the no. of rows that are full
+	int CheckFullRowsAndSlide();
 	/// Returns True if a row is filled
 	bool CheckRowFull(int row);
 	/// Prints out a string representation of a row (for debugging)

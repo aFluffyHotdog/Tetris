@@ -38,6 +38,10 @@ void Board::ClearRow(const int row) {
 	}
 }
 
+void Board::AddRows(int numRows) {
+
+}
+
 bool Board::CheckRowFull(int row) {
 	//TODO replace with std::all_of()
 	for (const auto& cell : grid[row]) {
@@ -49,16 +53,19 @@ bool Board::CheckRowFull(int row) {
 
 }
 
-void Board::CheckRowsAndSlide() {
+int Board::CheckFullRowsAndSlide() {
 	int i = 19;
+	int rowsFull = 0;
 	while(i > 0) {
 		if(CheckRowFull(i)) {
+			rowsFull++;
 			ShiftRows(i);
 		}
 		else {
 			i--;
 		}
 	}
+	return rowsFull;
 }
 Board::Cell::Cell() {
 	c = WHITE;

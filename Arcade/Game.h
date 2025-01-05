@@ -16,7 +16,7 @@ public:
 	void DrawBoard();
 
 	/// Handle rotation, moving left, right, and down
-	void HandleInput();
+	int HandleInput();
 	/// Selects a random block to be an active block.
 	void SetActive();
 

@@ -1,4 +1,7 @@
 #include "Game.h"
+
+#include <iostream>
+#include <ostream>
 #include <random>
 #include "raylib.h"
 #include <vector>
@@ -79,29 +82,30 @@ void Game::DrawBoard() {
 	}
 }
 
-void Game::HandleInput() {
+int Game::HandleInput() {
 	const int keyPressed = GetKeyPressed();
+	int cleared_shit;
 	switch (keyPressed)
 	{
 	case KEY_LEFT:
 		Game::MoveLeft();
-		break;
+		return 0;
 	case KEY_RIGHT:
 		Game::MoveRight();
-		break;
+		return 0;
 	case KEY_UP:
 		Game::Rotate();
-		break;
+		return 0;
 	case KEY_DOWN:
 		Game::MoveDown();
-		board.CheckRowsAndSlide();
-		break;
+		cleared_shit = board.CheckFullRowsAndSlide();
+		return cleared_shit;
 	case KEY_SPACE:
 		Game::Drop();
-		board.CheckRowsAndSlide();
-		break;
+		cleared_shit = board.CheckFullRowsAndSlide();
+		return cleared_shit;
 	default:
-		break;
+		return 0;
 	}
 	
 
@@ -182,6 +186,7 @@ void Game::Rotate() {
 	}
 }
 
+
 void Game::MoveDown() {
 	// Check for in bound + collision
 	if ((Game::CheckBounds(activePiece.rotationState, 1, 0)) && (Game::CheckCollision(activePiece.rotationState, 1, 0)))
@@ -193,7 +198,7 @@ void Game::MoveDown() {
 		DrawActive();
 	}
 	else {
-		board.CheckRowsAndSlide();
+		board.CheckFullRowsAndSlide();
 		SetActive();
 	}
 
