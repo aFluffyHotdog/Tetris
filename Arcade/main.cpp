@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <algorithm>
 #include <cctype>
+#include <filesystem>
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
@@ -37,7 +38,7 @@ bool EventTriggered(const double interval)
 }
 
 const char* shaderLoc = "/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/scanlines.fs";
-typedef enum GameScreen { START = 0, SINGLE_PLAYER, ENDING, MULTI_HOST, MULTI_GUEST, MULTI_SELECT } GameScreen;
+typedef enum GameScreen { START = 0, SINGLE_PLAYER, ENDING, MULTI_HOST, MULTI_GUEST, MULTI_GAMEPLAY, MULTI_SELECT } GameScreen;
 
 
 
@@ -63,42 +64,33 @@ pid_t runPythonScript(const char* scriptName) {
     return pid;
 }
 
-void stopPythonScript(pid_t pid) {
+void stopPythonScript(const pid_t pid) {
     if (kill(pid, SIGTERM) == 0) {
         std::cout << "Python script stopped successfully.\n";
     } else {
         perror("Failed to stop Python script");
     }
 }
-
+namespace fs = std::filesystem;
 int main() {
-    // const char* scriptName = "/Users/thitwutpattanasuttinont/CLionProjects/Tetris/P2P/basicBitchServer.py";
-    // pid_t pythonPid = runPythonScript(scriptName);
-    // sleep(50);
-    // // Stop the Python script
-    // stopPythonScript(pythonPid);
     constexpr int scrWidth = 400;
     constexpr int scrHeight = 600;
     InitWindow(scrWidth, scrHeight, "Tetris");
     Shader scanLines = LoadShader(nullptr, shaderLoc);
 
-    //For debugging audio
-    InitAudioDevice();
-    Music theme = LoadMusicStream("/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/sounds/retroTheme.mp3");
-    PlayMusicStream(theme);
-
     // Loading Textures
-    Image image = LoadImage("/home/arcade/Tetris/Arcade/resources/logo.png");
+    Image image = LoadImage("..Arcade/resources/logo.png");
     Texture2D logo = LoadTextureFromImage(image);
     UnloadImage(image);
 
     // Server stuff declarations
     int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in serverAddress;
+    sockaddr_in serverAddress{};
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(65432);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     char buffer[1024] = {0};
+    bool player2Ready = false;
 
     // Setting up menu buttons
     int textWidth;
@@ -120,6 +112,7 @@ int main() {
     GameScreen currScreen = START;
     SetTargetFPS(60);
     auto g = Game(scrWidth, scrHeight);
+    pid_t pythonPid;
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -154,7 +147,6 @@ int main() {
                 if (g.gameOver) // Check game over state
                 {
                     g = Game(scrWidth, scrHeight);
-                    StopMusicStream(theme);
                     currScreen = ENDING;
                 }
                 break;
@@ -175,13 +167,15 @@ int main() {
                 {
                     std::cout << "selection index" << multiplayerMenuButtonIndex << std::endl;
                     switch (multiplayerMenuButtonIndex) {
-                        case 0: {
-                            currScreen = MULTI_HOST;
-                            break;
-                        }
-                        case 1: {
-                            connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-                            currScreen = MULTI_GUEST;
+                        case 0: { // Start a game
+                            //TODO: finish this
+                            const char* scriptName = "/home/ar";
+                            pythonPid = runPythonScript(scriptName);
+                            if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+                                cout << "Failed to connect to server" << endl;
+                                break;
+                            }
+
                             int flags = fcntl(clientSocket, F_GETFL, 0);
 
                             if (flags == -1) {
@@ -191,15 +185,30 @@ int main() {
                             if (fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK) == -1) {
                                 return -1;
                             }
-                            else
-                            {
-                                cout << "it's non blocking now?" << endl;
-                            }
-
+                            cout << "it's non blocking now?" << endl;
+                            currScreen = MULTI_HOST;
                             break;
                         }
-                        case 2: {
-                            std::cout << "going back to start menu" << startMenuButtonIndex << std::endl;
+                        case 1: {  // Join a game
+                            if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+                                cout << "Failed to connect to server" << endl;
+                                break;
+                            }
+
+                            int flags = fcntl(clientSocket, F_GETFL, 0);
+
+                            if (flags == -1) {
+                                return -1;
+                            }
+
+                            if (fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK) == -1) {
+                                return -1;
+                            }
+                            cout << "it's non blocking now?" << endl;
+                            currScreen = MULTI_GUEST;
+                            break;
+                        }
+                        case 2: { // back button
                             currScreen = START;
                             break;
                         }
@@ -260,8 +269,13 @@ int main() {
                 break;
             }
             case ENDING: {
-                DrawText("Hah! You lost!", 150, 200, 24,  WHITE);
-                DrawText("Press ENTER to try again", 150, 300, 16,  WHITE);
+                ClearBackground(RED);
+                textWidth = MeasureText("HAH! You Lost, try again", 24);
+                DrawText("HAH! You Lost, try again",
+                        (scrWidth - textWidth)/2,  // Center horizontally
+                        300,
+                        24,
+                        WHITE);
                 break;
             }
 
@@ -274,16 +288,38 @@ int main() {
                 }
                 break;
             }
+
             case MULTI_HOST: {
-                textWidth = MeasureText("TODO: finish websocekt code ", 20);
-                DrawText("TODO: finish join screen ", (scrWidth - textWidth)/2, 150, 20,  WHITE);
+                textWidth = MeasureText("Waiting for other player to join...", 20);
+                DrawText("Waiting for other player to join...", (scrWidth - textWidth)/2, 150, 20,  WHITE);
+                while (!player2Ready) {
+                    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+                    if (bytesReceived < 0) {
+                        continue;
+                    }
+                    buffer[bytesReceived] = '\0';
+                    if (strncmp(buffer, "Client 2 connected", sizeof(buffer)) == 0) {
+                        player2Ready = true;
+                        currScreen = MULTI_GAMEPLAY;
+
+                    }
+                    cout << "received " << buffer << endl;
+                }
                 break;
             }
+
             case MULTI_GUEST: {
+                const char* message = "Client 2 connected";
+                send(clientSocket, message, strlen(message), 0);
+                currScreen = MULTI_GAMEPLAY;
+            }
+
+            case MULTI_GAMEPLAY: {
                 if (g.gameOver) // Check game over state
                 {
                     g = Game(scrWidth, scrHeight);
-                    StopMusicStream(theme);
+                    stopPythonScript(pythonPid);
                     currScreen = ENDING;
                 }
                 g.Draw();
@@ -331,8 +367,6 @@ int main() {
         }
         EndDrawing();
     }
-    UnloadMusicStream(theme);
     CloseWindow();
-    CloseAudioDevice();
     return 0;
 }
