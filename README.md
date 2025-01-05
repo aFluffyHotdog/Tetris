@@ -2,16 +2,16 @@
 
 Progress update:
 - Game is running on the Raspberry Pi (after countless hours spent on Cmake and OpenGL issues)
-
-# TODO:
-- [ ] Make a proper destructor for the board class (or make it not dynamically allocate memory)
+# TODOs:
+- [ ] Fix game over not working after line has been added
+- [ ] Code up the multiplayer menu process
+- [ ] Make a proper destructor for the board class (or make it statically allocate memory)
+# Potential Features:
 - [ ] Add sounds
 - [ ] Hold block feaure
 - [ ] Next block feature
-- [x] Add start and end screen
 - [ ] Try shaders
 - [ ] (Potentially add sprites)
-- [x] Compile to run on PiOS *held back by OpenGl issues
 
 # Installion steps (on Mac, using CLion because people seem to not like Visual Studio)
 
