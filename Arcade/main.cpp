@@ -10,6 +10,8 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <algorithm>
+#include <cctype>
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
@@ -83,13 +85,10 @@ int main() {
     //For debugging audio
     InitAudioDevice();
     Music theme = LoadMusicStream("/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/sounds/retroTheme.mp3");
-    std::cout << IsAudioDeviceReady() << std::endl;
-    std::cout << IsMusicReady(theme) << std::endl;
-
     PlayMusicStream(theme);
 
     // Loading Textures
-    Image image = LoadImage("/resources/logo.png");
+    Image image = LoadImage("/home/arcade/Tetris/Arcade/resources/logo.png");
     Texture2D logo = LoadTextureFromImage(image);
     UnloadImage(image);
 
@@ -251,7 +250,7 @@ int main() {
                 //BeginShaderMode(scanLines);
                 g.Draw();
                 int rows_full = g.HandleInput();
-                if ( rows_full > 0) {
+                if (rows_full > 0) {
                     std::cout << rows_full << std::endl;
                 }
                 if (EventTriggered(0.4)) {
@@ -281,7 +280,12 @@ int main() {
                 break;
             }
             case MULTI_GUEST: {
-
+                if (g.gameOver) // Check game over state
+                {
+                    g = Game(scrWidth, scrHeight);
+                    StopMusicStream(theme);
+                    currScreen = ENDING;
+                }
                 g.Draw();
                 int rows_cleared = g.HandleInput();
                 if (EventTriggered(0.4)) {
@@ -295,15 +299,31 @@ int main() {
                 int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
                 if (bytesReceived > 0) {
-                    buffer[bytesReceived] = '\0';
-                    try {
-                        int rowsReceieved = std::stoi(buffer);
-                        if (rowsReceieved > 0) {
-                            g.board.ShiftRowsUp(rowsReceieved);
+                    buffer[bytesReceived] = '\0'; // Null-terminate the buffer
+                    std::cout << "Raw data received:\n";
+                    for (int i = 0; i < bytesReceived; ++i) {
+                        std::cout << "buffer[" << i << "]: " << static_cast<int>(buffer[i])
+                                  << " ('" << buffer[i] << "')\n";
+                    }
+                    std::string sanitizedBuffer(buffer, bytesReceived);
+
+                     sanitizedBuffer.erase(
+                        std::remove_if(sanitizedBuffer.begin(), sanitizedBuffer.end(),
+                                       [](unsigned char c) { return !std::isdigit(c); }),
+                        sanitizedBuffer.end());
+                        
+                    // Check for valid numeric input
+                    if (!sanitizedBuffer.empty() && 
+                        std::all_of(sanitizedBuffer.begin(), sanitizedBuffer.end(), ::isdigit)) {
+                        try {
+                            int number = std::stoi(sanitizedBuffer); // Convert to integer
+                            std::cout << "Received number: " << number << std::endl;
+                            g.board.ShiftRowsUp(number);
+                        } catch (const std::exception& e) {
+                            std::cerr << "Conversion error: " << e.what() << std::endl;
                         }
-                    } catch (const std::exception& e) {
-                        cerr << "Exception occurred: " << e.what() << endl;
-                        break;
+                    } else {
+                        std::cerr << "Invalid data received: \"" << sanitizedBuffer << "\"\n";
                     }
                 }
                 break;
