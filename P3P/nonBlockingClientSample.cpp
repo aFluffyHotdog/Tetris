@@ -11,7 +11,7 @@ int main(){
 	
 	sockaddr_in serverAddress;
 	serverAddress.sin_family = AF_INET;
-	serverAddress.sin_port = htons(12345);
+	serverAddress.sin_port = htons(65432);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 	
 	connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
@@ -43,7 +43,7 @@ int main(){
     		continue;
     	}
     	buffer[bytesReceived] = '\0';
-        if (strncmp(buffer, "client 2 connected", sizeof(buffer)) == 0) {
+        if (strncmp(buffer, "Client 2 connected", sizeof(buffer)) == 0) {
           player2Ready = true;
         }
     	cout << "received " << buffer << endl;

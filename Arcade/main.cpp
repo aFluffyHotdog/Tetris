@@ -4,9 +4,12 @@
 #include <unistd.h>
 #include "raylib.h"
 #include "Game.h"
-#include "NetworkHandler.h"
-#include <signal.h> // For kill
+#include <csignal>
 #include "Button.h"
+#include <cstring>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
@@ -76,23 +79,29 @@ int main() {
     constexpr int scrHeight = 600;
     InitWindow(scrWidth, scrHeight, "Tetris");
     Shader scanLines = LoadShader(nullptr, shaderLoc);
+
     //For debugging audio
     InitAudioDevice();
     Music theme = LoadMusicStream("/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/sounds/retroTheme.mp3");
     std::cout << IsAudioDeviceReady() << std::endl;
     std::cout << IsMusicReady(theme) << std::endl;
 
-    GameScreen currScreen = START;
-    SetTargetFPS(60);
-    auto g = Game(scrWidth, scrHeight);
     PlayMusicStream(theme);
-    std::cout << IsMusicStreamPlaying(theme) << std::endl;
 
-    Image image = LoadImage("/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/resources/logo.png");
-    Texture2D logo = LoadTextureFromImage(image);          // Image converted to texture, GPU memory (VRAM)
-    UnloadImage(image);   // Once image has been converted to texture and uploaded to VRAM, it can be unloaded from RAM
+    // Loading Textures
+    Image image = LoadImage("/resources/logo.png");
+    Texture2D logo = LoadTextureFromImage(image);
+    UnloadImage(image);
 
+    // Server stuff declarations
+    int clientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons(65432);
+    serverAddress.sin_addr.s_addr = INADDR_ANY;
+    char buffer[1024] = {0};
 
+    // Setting up menu buttons
     int textWidth;
     std::vector<Button> startMenuButtons = {
         Button(scrWidth/2.0, 400, "Single Player", true),
@@ -105,9 +114,13 @@ int main() {
         Button(scrWidth/2.0, 500, "<- Back", false)
     };
 
-
     int startMenuButtonIndex = 0;
     int multiplayerMenuButtonIndex = 0;
+
+    // Game Setup
+    GameScreen currScreen = START;
+    SetTargetFPS(60);
+    auto g = Game(scrWidth, scrHeight);
 
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
@@ -168,7 +181,22 @@ int main() {
                             break;
                         }
                         case 1: {
+                            connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
                             currScreen = MULTI_GUEST;
+                            int flags = fcntl(clientSocket, F_GETFL, 0);
+
+                            if (flags == -1) {
+                                return -1;
+                            }
+
+                            if (fcntl(clientSocket, F_SETFL, flags | O_NONBLOCK) == -1) {
+                                return -1;
+                            }
+                            else
+                            {
+                                cout << "it's non blocking now?" << endl;
+                            }
+
                             break;
                         }
                         case 2: {
@@ -193,6 +221,8 @@ int main() {
                     break;
                 }
             }
+            default:
+                break;
         }
 
         BeginDrawing();
@@ -211,8 +241,8 @@ int main() {
 
                 textWidth = MeasureText("Please select a game mode: ", 16);
                 DrawText("Please select a game mode: ", (scrWidth - textWidth)/2, 350, 16,  WHITE);
-                for (int i = 0; i < startMenuButtons.size(); i++) {
-                    startMenuButtons[i].Draw();
+                for (const auto & startMenuButton : startMenuButtons) {
+                    startMenuButton.Draw();
                 }
                 break;
             }
@@ -240,19 +270,42 @@ int main() {
                 ClearBackground(GetColor(0xff5b00ff));
                 textWidth = MeasureText("Start or join a game: ", 20);
                 DrawText("Start or join a game", (scrWidth - textWidth)/2, 150, 20,  WHITE);
-                for (int i = 0; i < multiplayerMenuButtons.size(); i++) {
-                    multiplayerMenuButtons[i].Draw();
+                for (const auto & multiplayerMenuButton : multiplayerMenuButtons) {
+                    multiplayerMenuButton.Draw();
                 }
                 break;
             }
             case MULTI_HOST: {
                 textWidth = MeasureText("TODO: finish websocekt code ", 20);
-                DrawText("TODO: finish websocekt code ", (scrWidth - textWidth)/2, 150, 20,  WHITE);
+                DrawText("TODO: finish join screen ", (scrWidth - textWidth)/2, 150, 20,  WHITE);
                 break;
             }
             case MULTI_GUEST: {
-                textWidth = MeasureText("TODO: finish websocekt code ", 20);
-                DrawText("TODO: finish websocekt code ", (scrWidth - textWidth)/2, 150, 20,  WHITE);
+
+                g.Draw();
+                int rows_cleared = g.HandleInput();
+                if (EventTriggered(0.4)) {
+                    g.MoveDown();
+                }
+                if (rows_cleared > 0) {
+                    const char* message = std::to_string(rows_cleared).c_str();
+                    send(clientSocket, message, strlen(message), 0);
+                }
+
+                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+
+                if (bytesReceived > 0) {
+                    buffer[bytesReceived] = '\0';
+                    try {
+                        int rowsReceieved = std::stoi(buffer);
+                        if (rowsReceieved > 0) {
+                            g.board.ShiftRowsUp(rowsReceieved);
+                        }
+                    } catch (const std::exception& e) {
+                        cerr << "Exception occurred: " << e.what() << endl;
+                        break;
+                    }
+                }
                 break;
             }
         }
