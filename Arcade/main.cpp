@@ -1,6 +1,5 @@
 #include <iostream>
 #include <ostream>
-#include <sys/types.h>
 #include <unistd.h>
 #include "raylib.h"
 #include "Game.h"
@@ -79,7 +78,14 @@ int main() {
     Shader scanLines = LoadShader(nullptr, shaderLoc);
 
     // Loading Textures
-    Image image = LoadImage("..Arcade/resources/logo.png");
+    char cwd[PATH_MAX];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        printf("Current working dir: %s\n", cwd);
+    } else {
+        perror("getcwd() error");
+        return 1;
+    }
+    Image image = LoadImage("../Arcade/resources/logo.png");
     Texture2D logo = LoadTextureFromImage(image);
     UnloadImage(image);
 
@@ -168,8 +174,9 @@ int main() {
                     std::cout << "selection index" << multiplayerMenuButtonIndex << std::endl;
                     switch (multiplayerMenuButtonIndex) {
                         case 0: { // Start a game
-                            //TODO: finish this
-                            const char* scriptName = "/home/ar";
+                            system("sudo nmcli device disconnect wlan0");
+                            system("sudo nmcli device wifi hotspot ssid arcade-hotspot password techteambestteam ifname wlan0");
+                            const char* scriptName = "../P3P/testing_purposes/server.py";
                             pythonPid = runPythonScript(scriptName);
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                                 cout << "Failed to connect to server" << endl;
