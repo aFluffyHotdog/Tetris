@@ -45,51 +45,64 @@ typedef enum GameScreen { START = 0, SINGLE_PLAYER, ENDING, MULTI_HOST, MULTI_GU
 
 
 
-pid_t runPythonScript(const char* scriptName) {
-    pid_t pid = fork(); // Create a new process
+int connectToWifi(const std::string& ssid, const std::string& password) {
+    // Path to the wpa_supplicant configuration file
+    const std::string wpaConfigPath = "/etc/wpa_supplicant/wpa_supplicant.conf";
 
-    if (pid == -1) {
-        // Error occurred while forking
-        perror("Failed to fork");
-        return -1;
+    // Create or modify the wpa_supplicant configuration file
+    std::string command = "sudo bash -c \"echo -e 'network={\\n"
+                          "ssid=\n"
+                          "psk=\\\"" + password + "\\\"\\n"
+                          "}' >> " + wpaConfigPath + "\"";
+
+    int result = std::system(command.c_str());
+    if (result != 0) {
+        std::cerr << "Failed to write Wi-Fi configuration." << std::endl;
+        return 1;
     }
 
-    if (pid == 0) {
-        // Child process: Replace this process with the Python script
-        execlp("python3", "python3", scriptName, nullptr);
-        // If execlp fails
-        perror("Failed to execute Python script");
-        exit(EXIT_FAILURE);
+    // Restart the wpa_supplicant service to apply changes
+    result = std::system("sudo systemctl restart wpa_supplicant");
+    if (result != 0) {
+        std::cerr << "Failed to restart wpa_supplicant service." << std::endl;
+        return 1;
     }
 
-    // Parent process: Return the child's PID
-    std::cout << "Python script started with PID: " << pid << "\n";
-    return pid;
+    // Reconnect to the network
+    result = std::system("sudo dhclient wlan0");
+    if (result != 0) {
+        std::cerr << "Failed to obtain an IP address." << std::endl;
+        return 1;
+    }
+
+    std::cout << "Connected to Wi-Fi network: " << ssid << std::endl;
+    return 0;
 }
 
-void stopPythonScript(const pid_t pid) {
-    if (kill(pid, SIGTERM) == 0) {
-        std::cout << "Python script stopped successfully.\n";
-    } else {
-        perror("Failed to stop Python script");
-    }
-}
-namespace fs = std::filesystem;
+
+
 int main() {
-    constexpr int scrWidth = 400;
-    constexpr int scrHeight = 600;
+    constexpr int scrWidth = 600;
+    constexpr int scrHeight = 1024;
     InitWindow(scrWidth, scrHeight, "Tetris");
+    ToggleFullscreen();
     Shader scanLines = LoadShader(nullptr, shaderLoc);
 
     // Loading Textures
-    char cwd[PATH_MAX];
+    char cwd[1024];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         printf("Current working dir: %s\n", cwd);
     } else {
         perror("getcwd() error");
         return 1;
     }
-    Image image = LoadImage("../Arcade/resources/logo.png");
+    //For debugging audio
+    InitAudioDevice();
+    Music theme = LoadMusicStream("/Users/thitwutpattanasuttinont/CLionProjects/Tetris/Arcade/sounds/retroTheme.mp3");
+    PlayMusicStream(theme);
+
+    // Loading Textures
+    Image image = LoadImage("/home/arcade/Tetris/Arcade/resources/logo.png");
     Texture2D logo = LoadTextureFromImage(image);
     UnloadImage(image);
 
@@ -105,14 +118,14 @@ int main() {
     // Setting up menu buttons
     int textWidth;
     std::vector<Button> startMenuButtons = {
-        Button(scrWidth/2.0, 400, "Single Player", true),
-        Button(scrWidth/2.0, 450, "Multiplayer", false)
+        Button(scrWidth/2.0, 600, "Single Player", true),
+        Button(scrWidth/2.0, 650, "Multiplayer", false)
     };
 
     std::vector<Button> multiplayerMenuButtons = {
-        Button(scrWidth/2.0, 400, "Start a new game", true),
-        Button(scrWidth/2.0, 450, "Join a game", false),
-        Button(scrWidth/2.0, 500, "<- Back", false)
+        Button(scrWidth/2.0, 600, "Start a new game", true),
+        Button(scrWidth/2.0, 650, "Join a game", false),
+        Button(scrWidth/2.0, 700, "<- Back", false)
     };
 
     int startMenuButtonIndex = 0;
@@ -187,8 +200,9 @@ int main() {
                             EndDrawing();
                             system("sudo nmcli device disconnect wlan0");
                             system("sudo nmcli device wifi hotspot ssid arcade-hotspot password techteambestteam ifname wlan0");
-                            std::thread pythonThread(runPythonScriptThread, "../P3P/testing_purposes/server.py");
-                            pythonThread.detach();
+                            //std::thread pythonThread(runPythonScriptThread, "../P3P/testing_purposes/server.py");
+                            //pythonThread.detach();
+                            system("python server.py");
                             WaitTime(2);
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                                 BeginDrawing();
@@ -198,6 +212,7 @@ int main() {
                                     300,
                                     14,
                                     WHITE);
+                                WaitTime(5);
                                 EndDrawing();
                                 break;
                             }
@@ -216,6 +231,16 @@ int main() {
                             break;
                         }
                         case 1: {  // Join a game
+                            int wifiSuccess = connectToWifi("arcade-hotspot", "techteambestteam");
+                            if (wifiSuccess != 0) {
+                                BeginDrawing();
+                                textWidth = MeasureText("Failed to connect to host wifi", 14);
+                                DrawText("Failed to connect to host wifi",
+                                    (scrWidth - textWidth) /2,  // Center horizontally
+                                    300,
+                                    14,
+                                    WHITE);
+                            }
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                                 BeginDrawing();
                                 textWidth = MeasureText("Failed to join server", 14);
@@ -225,6 +250,7 @@ int main() {
                                     14,
                                     WHITE);
                                 EndDrawing();
+                                
                                 break;
                             }
 
@@ -238,7 +264,9 @@ int main() {
                                 return -1;
                             }
                             cout << "it's non blocking now?" << endl;
-                            currScreen = MULTI_GUEST;
+                            const char* message = "Client 2 connected";
+                            send(clientSocket, message, strlen(message), 0);
+                            currScreen = MULTI_GAMEPLAY;
                             break;
                         }
                         case 2: { // back button
@@ -272,16 +300,16 @@ int main() {
         switch (currScreen) {
             case START: {
                 ClearBackground(GetColor(0x0085ffff));
-                DrawTextureEx(logo, (Vector2){100, 75},0, 0.5, WHITE);
-                textWidth = MeasureText("Hello Mr. Geoffreaky Hinton", 24);
-                DrawText("Hello Mr. Geoffreaky Hinton",
+                DrawTextureEx(logo, (Vector2){200, 200},0, 0.5, WHITE);
+                textWidth = MeasureText("IEEE 2024 Fall Project", 24);
+                DrawText("IEEE 2024 Fall Project",
                         (scrWidth - textWidth)/2,  // Center horizontally
-                        300,
+                        500,
                         24,
                         WHITE);
 
                 textWidth = MeasureText("Please select a game mode: ", 16);
-                DrawText("Please select a game mode: ", (scrWidth - textWidth)/2, 350, 16,  WHITE);
+                DrawText("Please select a game mode: ", (scrWidth - textWidth)/2, 550, 16,  WHITE);
                 for (const auto & startMenuButton : startMenuButtons) {
                     startMenuButton.Draw();
                 }
@@ -323,7 +351,7 @@ int main() {
             }
 
             case MULTI_HOST: {
-                //std::cout << "multi host reached!" << std::endl;
+                std::cout << "multi host reached!" << std::endl;
                 ClearBackground(BLACK);
                 textWidth = MeasureText("Waiting for other player to join...", 20);
                 DrawText("Waiting for other player to join...", (scrWidth - textWidth)/2, 150, 20,  WHITE);
@@ -344,18 +372,10 @@ int main() {
                 break;
             }
 
-            case MULTI_GUEST: {
-                const char* message = "Client 2 connected";
-                send(clientSocket, message, strlen(message), 0);
-                currScreen = MULTI_GAMEPLAY;
-            }
-
             case MULTI_GAMEPLAY: {
                 if (g.gameOver) // Check game over state
                 {
                     g = Game(scrWidth, scrHeight);
-                    stopPythonScript(pythonPid);
-                    currScreen = ENDING;
                 }
                 g.Draw();
                 int rows_cleared = g.HandleInput();
