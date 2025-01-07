@@ -11,7 +11,11 @@
 #include <sys/socket.h>
 #include <algorithm>
 #include <cctype>
-#include <filesystem>
+#include <thread>
+
+void runPythonScriptThread(const char* scriptName) {
+    system(("python3 " + std::string(scriptName)).c_str());
+}
 
 #if defined(PLATFORM_DESKTOP)
     #define GLSL_VERSION            330
@@ -171,15 +175,30 @@ int main() {
                 }
                 if (IsKeyPressed(KEY_ENTER) )
                 {
-                    std::cout << "selection index" << multiplayerMenuButtonIndex << std::endl;
                     switch (multiplayerMenuButtonIndex) {
                         case 0: { // Start a game
+                            BeginDrawing();
+                            textWidth = MeasureText("starting server...", 14);
+                            DrawText("starting server...",
+                                (scrWidth - textWidth) /2,  // Center horizontally
+                                300,
+                                14,
+                                WHITE);
+                            EndDrawing();
                             system("sudo nmcli device disconnect wlan0");
                             system("sudo nmcli device wifi hotspot ssid arcade-hotspot password techteambestteam ifname wlan0");
-                            const char* scriptName = "../P3P/testing_purposes/server.py";
-                            pythonPid = runPythonScript(scriptName);
+                            std::thread pythonThread(runPythonScriptThread, "../P3P/testing_purposes/server.py");
+                            pythonThread.detach();
+                            WaitTime(2);
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-                                cout << "Failed to connect to server" << endl;
+                                BeginDrawing();
+                                textWidth = MeasureText("Failed to start server", 14);
+                                DrawText("Failed to start server",
+                                    (scrWidth - textWidth) /2,  // Center horizontally
+                                    300,
+                                    14,
+                                    WHITE);
+                                EndDrawing();
                                 break;
                             }
 
@@ -198,7 +217,14 @@ int main() {
                         }
                         case 1: {  // Join a game
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
-                                cout << "Failed to connect to server" << endl;
+                                BeginDrawing();
+                                textWidth = MeasureText("Failed to join server", 14);
+                                DrawText("Failed to join server",
+                                    (scrWidth - textWidth) /2,  // Center horizontally
+                                    300,
+                                    14,
+                                    WHITE);
+                                EndDrawing();
                                 break;
                             }
 
@@ -297,21 +323,23 @@ int main() {
             }
 
             case MULTI_HOST: {
+                //std::cout << "multi host reached!" << std::endl;
+                ClearBackground(BLACK);
                 textWidth = MeasureText("Waiting for other player to join...", 20);
                 DrawText("Waiting for other player to join...", (scrWidth - textWidth)/2, 150, 20,  WHITE);
-                while (!player2Ready) {
-                    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
-                    if (bytesReceived < 0) {
-                        continue;
-                    }
-                    buffer[bytesReceived] = '\0';
-                    if (strncmp(buffer, "Client 2 connected", sizeof(buffer)) == 0) {
-                        player2Ready = true;
-                        currScreen = MULTI_GAMEPLAY;
+                // Check if other player is ready.
+                int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
 
-                    }
+                if (bytesReceived < 0) {
+                    continue;
+                }
+                buffer[bytesReceived] = '\0';
+                if (strncmp(buffer, "Client 2 connected", sizeof(buffer)) == 0) {
                     cout << "received " << buffer << endl;
+                    player2Ready = true;
+                    currScreen = MULTI_GAMEPLAY;
+
                 }
                 break;
             }
