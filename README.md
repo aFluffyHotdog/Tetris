@@ -1,7 +1,9 @@
 # Arcade Machine Project
 
 Progress update:
-- Game is running on the Raspberry Pi (after countless hours spent on Cmake and OpenGL issues)
+- We are DONE
+![image](https://github.com/user-attachments/assets/db165816-36ce-4fc8-a493-72b5253cf050)
+
 # TODOs:
 - [ ] Fix game over not working after line has been added
 - [ ] Code up the multiplayer menu process
