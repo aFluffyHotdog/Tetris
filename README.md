@@ -2,7 +2,8 @@
 
 Progress update:
 - We are DONE
-![image](https://github.com/user-attachments/assets/db165816-36ce-4fc8-a493-72b5253cf050)
+<img src="https://github.com/user-attachments/assets/db165816-36ce-4fc8-a493-72b5253cf050" alt="image" width="300">
+
 
 # TODOs:
 - [ ] Fix game over not working after line has been added
