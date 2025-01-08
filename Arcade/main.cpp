@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <algorithm>
 #include <cctype>
 #include <thread>
@@ -24,6 +25,8 @@ void runPythonScriptThread(const char* scriptName) {
 #endif
 #define BUTTON_WIDTH 150
 #define BUTTON_HEIGHT 40
+#define SUBHEADING_FONT_SIZE 20
+#define HEADING_FONT_SIZE 32
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
@@ -85,7 +88,7 @@ int main() {
     constexpr int scrWidth = 600;
     constexpr int scrHeight = 1024;
     InitWindow(scrWidth, scrHeight, "Tetris");
-    ToggleFullscreen();
+    //ToggleFullscreen();
     Shader scanLines = LoadShader(nullptr, shaderLoc);
 
     // Loading Textures
@@ -112,6 +115,7 @@ int main() {
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_port = htons(65432);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
+    inet_pton(AF_INET, "127.0.0.1", &serverAddress.sin_addr);
     char buffer[1024] = {0};
     bool player2Ready = false;
 
@@ -191,28 +195,33 @@ int main() {
                     switch (multiplayerMenuButtonIndex) {
                         case 0: { // Start a game
                             BeginDrawing();
-                            textWidth = MeasureText("starting server...", 14);
+                            textWidth = MeasureText("starting server...", SUBHEADING_FONT_SIZE);
                             DrawText("starting server...",
                                 (scrWidth - textWidth) /2,  // Center horizontally
                                 300,
-                                14,
+                                SUBHEADING_FONT_SIZE,
                                 WHITE);
                             EndDrawing();
+                            usleep(2000000);
+                            std::cout << "first wait was fine?" << std::endl;
                             system("sudo nmcli device disconnect wlan0");
                             system("sudo nmcli device wifi hotspot ssid arcade-hotspot password techteambestteam ifname wlan0");
-                            //std::thread pythonThread(runPythonScriptThread, "../P3P/testing_purposes/server.py");
-                            //pythonThread.detach();
-                            system("python server.py");
-                            WaitTime(2);
+                            std::thread pythonThread(runPythonScriptThread, "../P3P/testing_purposes/server.py");
+                            pythonThread.detach();
+                            //system("python3 server.py");
+                            std::cout << "server started!" << std::endl;
+                            usleep(2000000);
+                            // if server couldn't connect
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                                 BeginDrawing();
-                                textWidth = MeasureText("Failed to start server", 14);
+                                textWidth = MeasureText("Failed to start server", SUBHEADING_FONT_SIZE);
                                 DrawText("Failed to start server",
                                     (scrWidth - textWidth) /2,  // Center horizontally
                                     300,
-                                    14,
+                                    SUBHEADING_FONT_SIZE,
                                     WHITE);
-                                WaitTime(5);
+                                usleep(2000000);
+                                std::cout << "Failed to start server" << std::endl;
                                 EndDrawing();
                                 break;
                             }
@@ -234,23 +243,29 @@ int main() {
                             int wifiSuccess = connectToWifi("arcade-hotspot", "techteambestteam");
                             if (wifiSuccess != 0) {
                                 BeginDrawing();
-                                textWidth = MeasureText("Failed to connect to host wifi", 14);
+                                textWidth = MeasureText("Failed to connect to host wifi", SUBHEADING_FONT_SIZE);
                                 DrawText("Failed to connect to host wifi",
                                     (scrWidth - textWidth) /2,  // Center horizontally
                                     300,
-                                    14,
+                                    SUBHEADING_FONT_SIZE,
                                     WHITE);
                             }
+                            if (inet_pton(AF_INET, "10.42.0.1", &serverAddress.sin_addr) <= 0) {
+                                perror("Invalid address or address not supported");
+                                close(clientSocket);
+                                break;
+                            }
+
                             if (connect(clientSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
                                 BeginDrawing();
-                                textWidth = MeasureText("Failed to join server", 14);
+                                textWidth = MeasureText("Failed to join server", SUBHEADING_FONT_SIZE);
                                 DrawText("Failed to join server",
                                     (scrWidth - textWidth) /2,  // Center horizontally
                                     300,
-                                    14,
+                                    SUBHEADING_FONT_SIZE,
                                     WHITE);
                                 EndDrawing();
-                                
+
                                 break;
                             }
 
@@ -301,15 +316,15 @@ int main() {
             case START: {
                 ClearBackground(GetColor(0x0085ffff));
                 DrawTextureEx(logo, (Vector2){200, 200},0, 0.5, WHITE);
-                textWidth = MeasureText("IEEE 2024 Fall Project", 24);
+                textWidth = MeasureText("IEEE 2024 Fall Project",HEADING_FONT_SIZE);
                 DrawText("IEEE 2024 Fall Project",
                         (scrWidth - textWidth)/2,  // Center horizontally
                         500,
-                        24,
+                       HEADING_FONT_SIZE,
                         WHITE);
 
-                textWidth = MeasureText("Please select a game mode: ", 16);
-                DrawText("Please select a game mode: ", (scrWidth - textWidth)/2, 550, 16,  WHITE);
+                textWidth = MeasureText("Please select a game mode: ", SUBHEADING_FONT_SIZE);
+                DrawText("Please select a game mode: ", (scrWidth - textWidth)/2, 550, SUBHEADING_FONT_SIZE,  WHITE);
                 for (const auto & startMenuButton : startMenuButtons) {
                     startMenuButton.Draw();
                 }
@@ -331,19 +346,19 @@ int main() {
             }
             case ENDING: {
                 ClearBackground(RED);
-                textWidth = MeasureText("HAH! You Lost, try again", 24);
+                textWidth = MeasureText("HAH! You Lost, try again",HEADING_FONT_SIZE);
                 DrawText("HAH! You Lost, try again",
                         (scrWidth - textWidth)/2,  // Center horizontally
                         300,
-                        24,
+                       HEADING_FONT_SIZE,
                         WHITE);
                 break;
             }
 
             case MULTI_SELECT: {
                 ClearBackground(GetColor(0xff5b00ff));
-                textWidth = MeasureText("Start or join a game: ", 20);
-                DrawText("Start or join a game", (scrWidth - textWidth)/2, 150, 20,  WHITE);
+                textWidth = MeasureText("Start or join a game: ", HEADING_FONT_SIZE);
+                DrawText("Start or join a game", (scrWidth - textWidth)/2, 150, HEADING_FONT_SIZE,  WHITE);
                 for (const auto & multiplayerMenuButton : multiplayerMenuButtons) {
                     multiplayerMenuButton.Draw();
                 }
@@ -351,7 +366,6 @@ int main() {
             }
 
             case MULTI_HOST: {
-                std::cout << "multi host reached!" << std::endl;
                 ClearBackground(BLACK);
                 textWidth = MeasureText("Waiting for other player to join...", 20);
                 DrawText("Waiting for other player to join...", (scrWidth - textWidth)/2, 150, 20,  WHITE);
